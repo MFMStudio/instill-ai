@@ -1,8 +1,12 @@
 import Database from "better-sqlite3";
 import path from "path";
+import fs from "fs";
 import crypto from "crypto";
 
 const DB_PATH = path.join(__dirname, "../data/platform.db");
+
+// Ensure the data directory exists (required on fresh deployments / Railway)
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 
 export const db = new Database(DB_PATH);
 
