@@ -21,6 +21,10 @@ const publicRoot = path.join(__dirname, "../public");
 const homeHtml = path.resolve(publicRoot, "home.html");
 const isProd = process.env.NODE_ENV === "production";
 
+// Trust the first proxy (Cloudflare / Railway ingress) so that
+// req.secure is true and secure session cookies are set correctly.
+app.set("trust proxy", 1);
+
 // ── Structured logger ──────────────────────────────────────────────────────
 function log(level: "INFO" | "WARN" | "ERROR", msg: string, meta?: object) {
   const entry = { ts: new Date().toISOString(), level, msg, ...meta };
