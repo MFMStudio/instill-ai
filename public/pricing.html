@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Instill AI pricing — Free, Pro, Team, and Business. Competitive self-hosted preference tiers with MCP and OpenAPI." />
+  <title>Instill AI — Pricing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/signal.css?v=pricing-20260507b" />
+  <style id="pricing-tier-styles">
+    .page-hero { padding: 80px 0 64px; border-bottom: 1px solid var(--rule); }
+    .page-hero h1 { font-size: clamp(40px, 6vw, 72px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.0; margin-top: 20px; }
+    .page-hero p { font-size: 17px; color: var(--ink-2); max-width: 58ch; margin-top: 20px; line-height: 1.6; }
+
+    .disclaimer { padding: 20px 24px; background: var(--signal-soft); border: 1px solid oklch(0.78 0.15 118 / 0.3); border-radius: var(--radius-lg); margin: 40px 0 0; font-size: 13.5px; color: var(--signal-ink); }
+    .disclaimer strong { font-weight: 600; }
+
+    .tiers-section { padding: 80px 0; }
+    .tiers-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      margin-top: 48px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+    .tier-card { padding: 36px 28px; position: relative; background: var(--paper); min-width: 0; }
+    /**
+     * Featured tier: same semantic colours as Free/Team (inherits --ink / --ink-2 / --muted).
+     * Previous “invert panel” (cream vs charcoal) fought theme tokens and looked low-contrast.
+     * Emphasis = signal border + slight elevation only.
+     */
+    .tier-card.featured {
+      background: var(--paper-2);
+      color: var(--ink);
+      z-index: 2;
+      box-shadow:
+        inset 0 0 0 1px oklch(0.78 0.19 118 / 0.35),
+        0 16px 48px oklch(0 0 0 / 0.08);
+    }
+    [data-theme="dark"] .tier-card.featured {
+      box-shadow:
+        inset 0 0 0 1px oklch(0.78 0.19 118 / 0.28),
+        0 16px 48px oklch(0 0 0 / 0.45);
+    }
+    .tier-badge { display: inline-block; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: var(--signal); color: #14130f; font-weight: 600; margin-bottom: 16px; }
+    .tier-eyebrow { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px; }
+    .tier-name { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
+    .tier-price { margin-top: 20px; display: flex; align-items: baseline; gap: 4px; }
+    .tier-price-amount { font-size: clamp(36px, 4vw, 44px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
+    .tier-price-sub { font-size: 14px; color: var(--muted); }
+    .tier-desc { font-size: 13.5px; color: var(--ink-2); margin-top: 16px; line-height: 1.55; min-height: 40px; }
+    .tier-divider { height: 1px; background: var(--rule); margin: 24px 0; }
+    .tier-features { list-style: none; }
+    .tier-feature { display: flex; align-items: baseline; gap: 10px; padding: 6px 0; font-size: 13.5px; color: var(--ink-2); }
+    .tier-feature.dim { color: var(--muted); }
+    .tier-feature::before { content: "✓"; font-family: var(--font-mono); font-size: 11px; color: var(--signal-ink); flex-shrink: 0; font-weight: 700; }
+    .tier-feature.dim::before { content: "✗"; color: var(--muted); }
+    .tier-card.featured .tier-feature::before { color: var(--signal-ink); }
+    .tier-cta { margin-top: 32px; }
+    .tier-cta-note { font-size: 11px; color: var(--muted); margin-top: 8px; font-family: var(--font-mono); }
+
+    .compare-section { padding: 80px 0; background: var(--paper-2); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .compare-table-wrap { overflow-x: auto; margin-top: 48px; }
+    .compare-table { width: 100%; border-collapse: collapse; background: var(--paper); font-size: 13.5px; }
+    .compare-table th { padding: 16px 20px; border-bottom: 2px solid var(--ink); font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); text-align: left; }
+    .compare-table th:not(:first-child) { text-align: center; }
+    .compare-table td { padding: 14px 20px; border-bottom: 1px solid var(--rule); }
+    .compare-table td:not(:first-child) { text-align: center; font-family: var(--font-mono); font-size: 12px; }
+    .compare-table tr:hover td { background: var(--paper-2); }
+    .compare-table .feat-name { font-weight: 500; }
+    .compare-table .feat-note { display: block; font-size: 11.5px; color: var(--muted); margin-top: 2px; font-weight: 400; }
+    .compare-table .c-yes { color: var(--signal-ink); font-weight: 700; }
+    .compare-table .c-no { color: var(--muted); }
+    .compare-table .c-val { color: var(--ink); }
+    .compare-table .section-row td { background: var(--paper-2); font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; padding: 10px 20px; border-bottom: 1px solid var(--rule); }
+
+    .faq-section { padding: 80px 0; }
+    .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 48px; border-top: 1px solid var(--rule); }
+    .faq-item { padding: 32px 0 32px; border-bottom: 1px solid var(--rule); padding-right: 48px; }
+    .faq-item:nth-child(even) { padding-right: 0; padding-left: 48px; border-left: 1px solid var(--rule); }
+    .faq-item h3 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 10px; }
+    .faq-item p { font-size: 14px; color: var(--ink-2); line-height: 1.6; }
+    .faq-item p a { color: var(--signal-ink); text-decoration: underline; }
+
+    .cta-strip { padding: 80px 0; }
+    .cta-strip-inner { border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: 48px; display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center; }
+    .cta-strip-inner h2 { font-size: clamp(24px, 3vw, 36px); font-weight: 500; letter-spacing: -0.02em; }
+    .cta-strip-inner p { color: var(--ink-2); margin-top: 8px; font-size: 14.5px; }
+    .cta-strip-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+    .market-context-section { padding: 0 0 80px; }
+    .market-context-inner {
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      background: var(--paper);
+    }
+    .market-context-inner h2 { margin-bottom: 12px; font-size: clamp(22px, 2.5vw, 28px); }
+    .market-context-lead { font-size: 14.5px; color: var(--ink-2); max-width: 62ch; line-height: 1.65; margin-bottom: 28px; }
+    .market-context-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px 32px; }
+    .market-context-grid dt { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 8px; }
+    .market-context-grid dd { font-size: 13.5px; color: var(--ink-2); line-height: 1.6; margin: 0; }
+    .market-context-grid dd strong { color: var(--ink); font-weight: 600; }
+
+    @media (max-width: 1180px) {
+      .tiers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 880px) {
+      .tiers-grid { grid-template-columns: 1fr; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .faq-item:nth-child(even) { padding-left: 0; border-left: none; }
+      .cta-strip-inner { grid-template-columns: 1fr; }
+      .cta-strip-actions { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:300;padding:10px 18px;background:var(--ink);color:var(--paper);font-weight:600;font-size:14px;text-decoration:none;border-radius:0 0 8px 8px;">Skip to content</a>
+<div class="shell">
+
+  <header class="topbar">
+    <a href="/home" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-meta">Instill AI <span class="v">v2.0</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/home">Overview</a>
+      <a href="/integrations">Integrations</a>
+      <a href="/tools">Tools</a>
+      <a href="/roadmap">Roadmap</a>
+      <a href="/pricing" class="active">Pricing</a>
+    </nav>
+    <div class="top-actions" id="topbar-actions">
+      <button type="button" class="btn-theme" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button>
+      <a href="/login" class="btn btn-ghost btn-sm">Sign in</a>
+      <a href="/login#register" class="btn btn-primary btn-sm">Get started <span class="arrow">→</span></a>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <section class="page-hero wrap">
+      <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">Pricing</span></div>
+      <h1>Simple, transparent tiers.</h1>
+      <p>Self-hosted means you run the app. The tiers below describe what we target in the product; your deployment may enable billing, SSO, and limits differently — or stay on the free open distribution. <strong>Paid tiers</strong> are set where credible indie and small-team dev infrastructure usually sits: preferences apply on <strong>every</strong> assistant session, so list prices signal reliability, not a throwaway app.</p>
+      <div class="disclaimer"><strong>Self-hosting note.</strong> This software does not charge your card by default. Use the plan row as a roadmap, or wire your own checkout and feature flags to match your business. <strong>List prices below are in GBP</strong> for positioning; Stripe checkout uses whichever currency and Price IDs you configure on your deployment.</div>
+    </section>
+
+    <section class="tiers-section wrap">
+      <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">Plans</span></div>
+      <div class="tiers-grid">
+
+        <div class="tier-card">
+          <div class="tier-eyebrow">Local</div>
+          <div class="tier-name">Free</div>
+          <div class="tier-price">
+            <span class="tier-price-amount">£0</span>
+            <span class="tier-price-sub">forever</span>
+          </div>
+          <p class="tier-desc">For individuals getting started on their own machine.</p>
+          <hr class="tier-divider" />
+          <ul class="tier-features">
+            <li class="tier-feature">1 user</li>
+            <li class="tier-feature">Generous preference storage</li>
+            <li class="tier-feature">All MCP &amp; OpenAPI tools</li>
+            <li class="tier-feature">In-app Setup Guide</li>
+            <li class="tier-feature">Per-user API key</li>
+            <li class="tier-feature dim">Admin panel (optional)</li>
+            <li class="tier-feature dim">Organisation SSO</li>
+          </ul>
+          <div class="tier-cta">
+            <a href="/login#register" class="btn btn-ghost" style="width:100%;justify-content:center;" id="cta-free">Get started free</a>
+            <p class="tier-cta-note">Creates an account on your deployment.</p>
+          </div>
+        </div>
+
+        <div class="tier-card featured">
+          <div class="tier-badge">Most popular</div>
+          <div class="tier-eyebrow">Personal</div>
+          <div class="tier-name">Pro</div>
+          <div class="tier-price">
+            <span class="tier-price-amount">£15</span>
+            <span class="tier-price-sub">/mo</span>
+          </div>
+          <p class="tier-desc">For power users who want priority support without team overhead.</p>
+          <hr class="tier-divider" />
+          <ul class="tier-features">
+            <li class="tier-feature">1 user</li>
+            <li class="tier-feature">Unlimited preferences (fair use)</li>
+            <li class="tier-feature">All MCP &amp; OpenAPI tools</li>
+            <li class="tier-feature">Setup Guide + updates</li>
+            <li class="tier-feature">API key rotation</li>
+            <li class="tier-feature">Priority email support</li>
+            <li class="tier-feature dim">Multi-tenant admin</li>
+          </ul>
+          <div class="tier-cta">
+            <button type="button" class="btn btn-signal" style="width:100%;justify-content:center;" id="cta-pro" onclick="startCheckout('pro')">Start Personal</button>
+            <p class="tier-cta-note" id="note-pro">£15/mo · Cancel anytime.</p>
+          </div>
+        </div>
+
+        <div class="tier-card">
+          <div class="tier-eyebrow">Studio</div>
+          <div class="tier-name">Team</div>
+          <div class="tier-price">
+            <span class="tier-price-amount">£39</span>
+            <span class="tier-price-sub">/mo</span>
+          </div>
+          <p class="tier-desc">Small teams that want one workspace bill, not per-seat IDE pricing.</p>
+          <hr class="tier-divider" />
+          <ul class="tier-features">
+            <li class="tier-feature">Up to 15 users (configurable)</li>
+            <li class="tier-feature">Isolated stores &amp; API keys</li>
+            <li class="tier-feature">Admin panel &amp; user management</li>
+            <li class="tier-feature">All integrations</li>
+            <li class="tier-feature">Priority support</li>
+          </ul>
+          <div class="tier-cta">
+            <button type="button" class="btn btn-ghost" style="width:100%;justify-content:center;" id="cta-team" onclick="startCheckout('team')">Start Team</button>
+            <p class="tier-cta-note" id="note-team">£39/mo · Up to 15 users.</p>
+          </div>
+        </div>
+
+        <div class="tier-card">
+          <div class="tier-eyebrow">Organization</div>
+          <div class="tier-name">Business</div>
+          <div class="tier-price">
+            <span class="tier-price-amount">£99</span>
+            <span class="tier-price-sub">/mo</span>
+          </div>
+          <p class="tier-desc">Departments that need more seats, SAML readiness, and audit-friendly operations.</p>
+          <hr class="tier-divider" />
+          <ul class="tier-features">
+            <li class="tier-feature">Up to 50 users (configurable)</li>
+            <li class="tier-feature">Everything in Studio</li>
+            <li class="tier-feature">SSO / SAML preparation &amp; docs</li>
+            <li class="tier-feature">Audit-oriented exports</li>
+            <li class="tier-feature">Priority support &amp; onboarding session</li>
+          </ul>
+          <div class="tier-cta">
+            <button type="button" class="btn btn-ghost" style="width:100%;justify-content:center;" id="cta-business" onclick="startCheckout('business')">Start Business</button>
+            <p class="tier-cta-note" id="note-business">£99/mo · Up to 50 users.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="market-context-section wrap">
+      <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">Market context</span></div>
+      <div class="market-context-inner">
+        <h2>How this compares in the market.</h2>
+        <p class="market-context-lead">
+          Many adjacent tools price <strong>hosted MCP traffic</strong>, <strong>memory APIs</strong>, or <strong>per-seat IDE bundles</strong>. Instill AI is optimized for <strong>session preference injection</strong> — rules your assistants pull via MCP or OpenAPI — with optional billing tiers shown here as a roadmap when you or a host enables checkout.
+        </p>
+        <dl class="market-context-grid">
+          <div>
+            <dt>Vs. MCP gateways</dt>
+            <dd><strong>Not RPC metering.</strong> Platforms that sell RPC credits or hosted MCP namespaces optimize uptime and volume. We optimize <strong>consistent rules</strong> stored under your deployment.</dd>
+          </div>
+          <div>
+            <dt>Personal tier</dt>
+            <dd><strong>£15/mo</strong> aligns with serious solo-dev subscriptions (memory, API, and assistant tooling often land around <strong>£12–25/mo</strong>). Preference injection hits every session — list prices reflect that, not a novelty app.</dd>
+          </div>
+          <div>
+            <dt>Team tier</dt>
+            <dd><strong>£39/mo flat workspace</strong> for up to <strong>15 users</strong> — compare that to per-seat IDE bundles (~£18–35/user/mo). Factor seats when comparing totals.</dd>
+          </div>
+          <div>
+            <dt>Business tier</dt>
+            <dd><strong>£99/mo</strong> targets org-sized preference governance — comparable seat and compliance expectations often sit in <strong>£129–299/mo</strong> bundles elsewhere. Ship behaviour still depends on your deployment.</dd>
+          </div>
+          <div>
+            <dt>SSO &amp; enterprise</dt>
+            <dd><strong>Business</strong> is where SAML prep and audit-friendly exports live in this roadmap. Full managed SLAs or custom contracts usually stay vendor-specific — self-hosters wire their own IdP.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="compare-section">
+      <div class="wrap">
+        <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">Feature comparison</span></div>
+        <h2 style="max-width:18ch;">Everything included at each tier.</h2>
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th style="width:34%">Feature</th>
+                <th>Local</th>
+                <th>Personal</th>
+                <th>Studio</th>
+                <th>Business</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="section-row"><td colspan="5">Core</td></tr>
+              <tr>
+                <td><span class="feat-name">Users</span></td>
+                <td><span class="c-val">1</span></td>
+                <td><span class="c-val">1</span></td>
+                <td><span class="c-val">Up to 15</span></td>
+                <td><span class="c-val">Up to 50</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">Preference storage</span></td>
+                <td><span class="c-val">Generous</span></td>
+                <td><span class="c-val">Unlimited</span></td>
+                <td><span class="c-val">Unlimited</span></td>
+                <td><span class="c-val">Unlimited</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">API key</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">API key rotation</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr class="section-row"><td colspan="5">Protocol</td></tr>
+              <tr>
+                <td><span class="feat-name">MCP tools</span><span class="feat-note">get_preferences, save, list, delete, search…</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">OpenAPI / ChatGPT Actions</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr class="section-row"><td colspan="5">Management</td></tr>
+              <tr>
+                <td><span class="feat-name">Dashboard</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">In-app Setup Guide</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">Admin panel</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">Isolated stores per user</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">SSO / SAML preparation</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">Audit-oriented exports</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr class="section-row"><td colspan="5">Support</td></tr>
+              <tr>
+                <td><span class="feat-name">Community support</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">Priority email support</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+              <tr>
+                <td><span class="feat-name">Onboarding session</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-no">—</span></td>
+                <td><span class="c-yes">✓</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section wrap">
+      <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">FAQ</span></div>
+      <h2>Common questions.</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h3>What does self-hosted mean?</h3>
+          <p>You run the Node.js app and SQLite database on hardware you control. Preference text and credentials stay off third-party SaaS unless you choose to use managed hosting elsewhere.</p>
+        </div>
+        <div class="faq-item">
+          <h3>What is MCP?</h3>
+          <p>The Model Context Protocol connects assistants to tools and data. Instill AI exposes your rules through MCP so Claude, Cursor, and compatible clients can pull preferences with one authenticated endpoint.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Do I restart tools after editing preferences?</h3>
+          <p>No. The next time the model calls <code>get_preferences</code>, it receives your latest dashboard state — no redeploy or restart required.</p>
+        </div>
+        <div class="faq-item">
+          <h3>How does ChatGPT fit in?</h3>
+          <p>ChatGPT Custom GPTs use OpenAPI Actions instead of MCP. This server exposes <code>/openapi.json</code>; you import it and pass the same Bearer API key.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Which editors are supported?</h3>
+          <p>See the <a href="/integrations">Integrations</a> page for Cursor, VS Code, Windsurf, Zed, Continue, Claude Code/Desktop, and generic MCP.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Can we change plans later?</h3>
+          <p>If you buy from a vendor who packages Instill AI, they set upgrade paths. If you self-host, you own the config — adjust limits and features in code or environment.</p>
+        </div>
+        <div class="faq-item">
+          <h3>How is this different from “MCP hosting” products?</h3>
+          <p>Hosted gateways often charge for RPC volume, namespaces, or uptime. Instill AI focuses on <strong>your preference store</strong> and tools like <code>get_preferences</code> — same protocol family, different primary value.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Why is Team a flat price instead of per seat?</h3>
+          <p>Many coding assistants bill <strong>per user per month</strong>. Our Studio tier is priced as a <strong>single workspace</strong> for small teams (up to 15 users in product copy, <strong>£39/mo</strong> here). Compare total cost accordingly.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-strip wrap">
+      <div class="cta-strip-inner card-flat">
+        <div>
+          <div class="section-eyebrow" style="margin-bottom:16px;"><span class="eyebrow eyebrow-dot">Get started</span></div>
+          <h2>Spin up the free tier in under two minutes.</h2>
+          <p>Connect one IDE, open the in-app Setup Guide, and your rules are live immediately.</p>
+        </div>
+        <div class="cta-strip-actions">
+          <a href="/login#register" class="btn btn-signal btn-lg">Create an account <span class="arrow">→</span></a>
+          <a href="/integrations" class="btn btn-ghost btn-lg">Browse integrations</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="brand" style="margin-bottom:16px;"><span class="brand-mark"></span><span>Instill AI</span></div>
+        <p style="font-size:13px;color:var(--ink-3);max-width:28ch;">Self-hosted preference server for the Model Context Protocol. Your rules. Every session.</p>
+      </div>
+      <div class="footer-col"><h5>Product</h5><a href="/home">Overview</a><a href="/integrations">Integrations</a><a href="/tools">Tools</a><a href="/roadmap">Roadmap</a><a href="/pricing">Pricing</a></div>
+      <div class="footer-col"><h5>Account</h5><a href="/login">Sign in</a><a href="/login#register">Register</a><a href="/dashboard">Dashboard</a><a href="/setup">Setup Guide</a></div>
+      <div class="footer-col"><h5>Legal</h5><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Instill AI · Self-hosted, your data, your rules</span><span>v2.0 · build 2026.05</span></div>
+  </footer>
+</div>
+<script src="/scroll-animations.js?v=pricing-tiers-20260507" defer></script>
+<script src="/theme.js"></script>
+<script src="/auth-nav.js" defer></script>
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
+<script>
+  var _isLoggedIn = false;
+  var _currentPlan = 'free';
+
+  function showToast(msg, type) {
+    var c = document.getElementById('toast-container');
+    var t = document.createElement('div');
+    t.className = 'toast toast-' + (type || 'success');
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 3000);
+  }
+
+  function setButtonLoading(id, loading) {
+    var btn = document.getElementById(id);
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.style.opacity = loading ? '0.6' : '';
+    btn.style.cursor = loading ? 'wait' : '';
+  }
+
+  async function startCheckout(plan) {
+    // If not logged in, redirect to register with plan hint
+    if (!_isLoggedIn) {
+      window.location.href = '/login#register?plan=' + plan;
+      return;
+    }
+
+    // If already on this plan, open portal
+    if (_currentPlan === plan) {
+      openPortal();
+      return;
+    }
+
+    setButtonLoading('cta-' + plan, true);
+    try {
+      var res = await fetch('/api/checkout/create-session', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: plan }),
+      });
+      var data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        showToast(data.error || 'Checkout unavailable. Please contact support.', 'error');
+        setButtonLoading('cta-' + plan, false);
+      }
+    } catch (e) {
+      showToast('Something went wrong. Please try again.', 'error');
+      setButtonLoading('cta-' + plan, false);
+    }
+  }
+
+  async function openPortal() {
+    try {
+      var res = await fetch('/api/checkout/portal', { method: 'POST', credentials: 'same-origin' });
+      var data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else showToast(data.error || 'Could not open billing portal.', 'error');
+    } catch (e) {
+      showToast('Could not open billing portal.', 'error');
+    }
+  }
+
+  // Adapt buttons based on auth state + current plan
+  async function initPricing() {
+    try {
+      var meRes = await fetch('/api/me', { credentials: 'same-origin' });
+      if (!meRes.ok) return; // logged out — buttons work as sign-up redirects
+
+      _isLoggedIn = true;
+      var statusRes = await fetch('/api/checkout/status', { credentials: 'same-origin' });
+      if (!statusRes.ok) return;
+      var status = await statusRes.json();
+      _currentPlan = status.plan || 'free';
+
+      // Update button labels to reflect current state
+      if (_currentPlan === 'pro') {
+        var btn = document.getElementById('cta-pro');
+        if (btn) { btn.textContent = 'Manage Pro plan'; }
+        var note = document.getElementById('note-pro');
+        if (note) { note.textContent = 'Your current plan · Manage billing →'; }
+      }
+      if (_currentPlan === 'team') {
+        var btn2 = document.getElementById('cta-team');
+        if (btn2) { btn2.textContent = 'Manage Team plan'; }
+        var note2 = document.getElementById('note-team');
+        if (note2) { note2.textContent = 'Your current plan · Manage billing →'; }
+      }
+      if (_currentPlan === 'business') {
+        var btnB = document.getElementById('cta-business');
+        if (btnB) { btnB.textContent = 'Manage Business plan'; }
+        var noteB = document.getElementById('note-business');
+        if (noteB) { noteB.textContent = 'Your current plan · Manage billing →'; }
+      }
+      if (_currentPlan === 'free') {
+        // update free CTA to go straight to dashboard since they're logged in
+        var freeBtn = document.getElementById('cta-free');
+        if (freeBtn) {
+          freeBtn.textContent = 'Go to dashboard';
+          freeBtn.href = '/dashboard';
+        }
+      }
+    } catch (e) {
+      // Silently fail — buttons default to login redirect
+    }
+  }
+
+  initPricing();
+</script>
+</body>
+</html>

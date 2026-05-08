@@ -1,0 +1,42 @@
+{
+  "id": "instill:typescript-v1",
+  "name": "TypeScript Stack",
+  "description": "Opinionated rules for TypeScript projects. Enforces strict mode, co-located tests, explicit types, and consistent import patterns across Claude Code, Cursor, and Copilot.",
+  "version": "1.0.0",
+  "tags": ["typescript", "coding", "testing", "node"],
+  "author": "Instill AI",
+  "preferences": [
+    {
+      "category": "coding",
+      "rule": "Always use TypeScript strict mode. Never use `any` unless explicitly justified with a comment."
+    },
+    {
+      "category": "coding",
+      "rule": "Co-locate tests with source files: `foo.ts` → `foo.test.ts` in the same directory."
+    },
+    {
+      "category": "coding",
+      "rule": "Prefer named exports over default exports. Default exports make refactoring harder."
+    },
+    {
+      "category": "coding",
+      "rule": "Use `zod` for runtime validation of external data (API responses, env vars, form inputs). Never trust untyped external data."
+    },
+    {
+      "category": "coding",
+      "rule": "Prefer `const` over `let`. Use `let` only when reassignment is unavoidable."
+    },
+    {
+      "category": "coding",
+      "rule": "Write explicit return types on all exported functions. Inferred return types are fine for internal helpers."
+    },
+    {
+      "category": "coding",
+      "rule": "Use `structuredClone` instead of JSON.parse/stringify for deep cloning objects."
+    },
+    {
+      "category": "workflow",
+      "rule": "Before adding a new dependency, check if the stdlib or an existing package already covers the need."
+    }
+  ]
+}

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instill AI — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/signal.css" />
+  <style>
+    .hidden { display: none !important; }
+
+    .admin-wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; padding-bottom: 80px; }
+
+    .page-header {
+      padding: 40px 0 32px;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 40px;
+    }
+    .page-header h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 500; letter-spacing: -0.025em; line-height: 1.0; }
+
+    .error-banner {
+      background: oklch(0.95 0.04 25); border: 1px solid oklch(0.85 0.10 25);
+      border-radius: var(--radius-lg); padding: 14px 20px;
+      color: oklch(0.40 0.14 25); font-size: 14px; margin-bottom: 24px; font-weight: 500;
+    }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+      background: var(--rule); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 40px;
+    }
+    .stat-card { background: var(--paper); padding: 24px 28px; }
+    .stat-label {
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px;
+    }
+    .stat-value { font-size: 36px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
+
+    .section-label {
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 16px;
+    }
+
+    .users-table-wrap {
+      border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden;
+    }
+
+    .badge-admin {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+      font-family: var(--font-mono); letter-spacing: 0.04em;
+      background: var(--signal-soft); color: var(--signal-ink);
+      border: 1px solid oklch(0.78 0.15 118 / 0.3);
+    }
+    .badge-user {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 999px; font-size: 11px;
+      font-family: var(--font-mono); letter-spacing: 0.04em;
+      background: var(--paper-2); color: var(--muted);
+      border: 1px solid var(--rule);
+    }
+
+    .you-label { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+
+    .loading-row td {
+      text-align: center; padding: 48px 24px;
+      font-family: var(--font-mono); font-size: 12px; color: var(--muted); letter-spacing: 0.06em;
+    }
+
+    .tbl td:last-child { text-align: right; }
+
+    /* ── Review queue ──────────────────────────────────── */
+    .review-queue-wrap {
+      border: 1px solid var(--rule); border-radius: var(--radius-lg); overflow: hidden;
+      margin-top: 40px;
+    }
+    .review-rule-preview {
+      font-size: 13px; color: var(--ink-2); white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; max-width: 340px;
+    }
+    .status-pill {
+      display: inline-flex; align-items: center;
+      padding: 2px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 600;
+      font-family: var(--font-mono); letter-spacing: 0.04em;
+    }
+    .pill-pending { background: oklch(0.95 0.08 60); color: oklch(0.40 0.15 60); border: 1px solid oklch(0.85 0.12 60 / 0.4); }
+    .review-actions { display: flex; gap: 6px; justify-content: flex-end; }
+    .btn-approve {
+      background: oklch(0.55 0.18 145); color: #fff; border: none;
+      padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-approve:hover { background: oklch(0.45 0.20 145); }
+    .btn-reject {
+      background: transparent; border: 1px solid oklch(0.75 0.12 25);
+      color: oklch(0.45 0.18 25); padding: 5px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-reject:hover { background: oklch(0.95 0.04 25); }
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:300;padding:10px 18px;background:var(--ink);color:var(--paper);font-weight:600;font-size:14px;text-decoration:none;border-radius:0 0 8px 8px;">Skip to content</a>
+<div class="shell">
+
+  <header class="topbar">
+    <a href="/home" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-meta">Instill AI <span class="v">v2.0</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/home">Overview</a>
+      <a href="/integrations">Integrations</a>
+      <a href="/tools">Tools</a>
+      <a href="/roadmap">Roadmap</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/setup">Setup</a>
+      <a href="/admin" class="active">Admin</a>
+    </nav>
+    <div class="top-actions">
+      <button type="button" class="btn-theme" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button>
+      <span class="status"><span class="dot"></span>Connected</span>
+      <button type="button" onclick="logout()" class="btn btn-ghost btn-sm">Sign out</button>
+    </div>
+  </header>
+
+  <main id="main-content" style="flex:1;">
+    <div class="admin-wrap">
+
+      <div class="page-header">
+        <div class="section-eyebrow" style="margin-bottom:10px;"><span class="eyebrow eyebrow-dot">Admin</span></div>
+        <h1>Admin Panel</h1>
+      </div>
+
+      <div id="admin-error" class="error-banner hidden" role="alert"></div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value" id="stat-users">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Preferences</div>
+          <div class="stat-value" id="stat-prefs">—</div>
+        </div>
+      </div>
+
+      <div class="section-label">Users</div>
+      <div class="users-table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="users-table">
+            <tr class="loading-row"><td colspan="4">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pending Review -->
+      <div style="margin-top:40px;">
+        <div class="section-label">Pending Review</div>
+        <div class="review-queue-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Category</th>
+                <th>Rule preview</th>
+                <th>Submitted</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="review-queue-table">
+              <tr class="loading-row"><td colspan="5">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+<script src="/theme.js"></script>
+<script>
+  function showToast(msg, type) {
+    type = type || 'success';
+    var c = document.getElementById('toast-container');
+    var t = document.createElement('div');
+    t.className = 'toast toast-' + type;
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 2600);
+  }
+
+  function renderUsersTable(users, me) {
+    var tbody = document.getElementById('users-table');
+    tbody.textContent = '';
+    if (!users.length) {
+      var tr = document.createElement('tr');
+      tr.className = 'loading-row';
+      tr.innerHTML = '<td colspan="4">No users found.</td>';
+      tbody.appendChild(tr);
+      return;
+    }
+    users.forEach(function (u) {
+      var tr = document.createElement('tr');
+
+      var tdEmail = document.createElement('td');
+      tdEmail.textContent = u.email;
+      tr.appendChild(tdEmail);
+
+      var tdRole = document.createElement('td');
+      var badge = document.createElement('span');
+      badge.className = u.is_admin ? 'badge-admin' : 'badge-user';
+      badge.textContent = u.is_admin ? 'Admin' : 'User';
+      tdRole.appendChild(badge);
+      tr.appendChild(tdRole);
+
+      var tdJoined = document.createElement('td');
+      tdJoined.textContent = new Date(u.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      tr.appendChild(tdJoined);
+
+      var tdAct = document.createElement('td');
+      if (u.id !== me.id) {
+        var del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'btn btn-danger btn-sm';
+        del.textContent = 'Delete';
+        del.setAttribute('data-user-id', String(u.id));
+        del.setAttribute('data-user-email', u.email);
+        del.addEventListener('click', function () {
+          deleteUser(Number(del.getAttribute('data-user-id')), del.getAttribute('data-user-email'));
+        });
+        tdAct.appendChild(del);
+      } else {
+        var you = document.createElement('span');
+        you.className = 'you-label';
+        you.textContent = 'You';
+        tdAct.appendChild(you);
+      }
+      tr.appendChild(tdAct);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderReviewQueue(items) {
+    var tbody = document.getElementById('review-queue-table');
+    tbody.textContent = '';
+    if (!items.length) {
+      var tr = document.createElement('tr');
+      tr.className = 'loading-row';
+      tr.innerHTML = '<td colspan="5">No items pending review.</td>';
+      tbody.appendChild(tr);
+      return;
+    }
+    items.forEach(function (item) {
+      var tr = document.createElement('tr');
+
+      var tdEmail = document.createElement('td');
+      tdEmail.textContent = item.user_email;
+      tr.appendChild(tdEmail);
+
+      var tdCat = document.createElement('td');
+      tdCat.textContent = item.category;
+      tr.appendChild(tdCat);
+
+      var tdRule = document.createElement('td');
+      var preview = item.rule.length > 60 ? item.rule.slice(0, 60) + '…' : item.rule;
+      var span = document.createElement('span');
+      span.className = 'review-rule-preview';
+      span.textContent = preview;
+      span.title = preview;
+      tdRule.appendChild(span);
+      tr.appendChild(tdRule);
+
+      var tdTime = document.createElement('td');
+      tdTime.textContent = new Date(item.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      tr.appendChild(tdTime);
+
+      var tdAct = document.createElement('td');
+      var wrap = document.createElement('div');
+      wrap.className = 'review-actions';
+
+      var btnApprove = document.createElement('button');
+      btnApprove.type = 'button';
+      btnApprove.className = 'btn-approve';
+      btnApprove.textContent = 'Approve';
+      btnApprove.addEventListener('click', function () { reviewAction(item.id, 'approve'); });
+
+      var btnReject = document.createElement('button');
+      btnReject.type = 'button';
+      btnReject.className = 'btn-reject';
+      btnReject.textContent = 'Reject';
+      btnReject.addEventListener('click', function () { reviewAction(item.id, 'reject'); });
+
+      wrap.appendChild(btnApprove);
+      wrap.appendChild(btnReject);
+      tdAct.appendChild(wrap);
+      tr.appendChild(tdAct);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function reviewAction(prefId, action) {
+    try {
+      var res = await fetch('/api/preferences/' + encodeURIComponent(prefId) + '/' + action, {
+        method: 'POST',
+        credentials: 'same-origin',
+      });
+      if (res.status === 401) { window.location.href = '/login'; return; }
+      if (!res.ok) {
+        var err = await res.json().catch(function () { return {}; });
+        throw new Error(err.error || action + ' failed');
+      }
+      showToast(action === 'approve' ? 'Preference approved' : 'Preference rejected');
+      loadReviewQueue();
+    } catch (e) {
+      showToast(e.message || action + ' failed', 'error');
+    }
+  }
+
+  async function loadReviewQueue() {
+    try {
+      var res = await fetch('/api/admin/review-queue', { credentials: 'same-origin' });
+      if (!res.ok) return;
+      var items = await res.json();
+      renderReviewQueue(items);
+    } catch (e) {
+      document.getElementById('review-queue-table').innerHTML = '<tr class="loading-row"><td colspan="5">Unable to load review queue.</td></tr>';
+    }
+  }
+
+  async function init() {
+    var errEl = document.getElementById('admin-error');
+    errEl.classList.add('hidden');
+    try {
+      var [usersRes, meRes, statsRes] = await Promise.all([
+        fetch('/api/admin/users', { credentials: 'same-origin' }),
+        fetch('/api/me', { credentials: 'same-origin' }),
+        fetch('/api/admin/stats', { credentials: 'same-origin' }),
+      ]);
+      if (usersRes.status === 401 || meRes.status === 401 || statsRes.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+      var users = await usersRes.json();
+      var me = await meRes.json();
+      var stats = await statsRes.json();
+      if (!usersRes.ok) throw new Error((!Array.isArray(users) && users && users.error) || 'Could not load users.');
+      if (!meRes.ok) throw new Error((me && me.error) || 'Could not load profile.');
+      if (!statsRes.ok) throw new Error((stats && stats.error) || 'Could not load stats.');
+
+      document.getElementById('stat-users').textContent = stats.totalUsers;
+      document.getElementById('stat-prefs').textContent = stats.totalPrefs;
+      renderUsersTable(users, me);
+      loadReviewQueue();
+    } catch (e) {
+      errEl.textContent = e.message || 'Failed to load admin panel.';
+      errEl.classList.remove('hidden');
+      document.getElementById('users-table').innerHTML = '<tr class="loading-row"><td colspan="4">Unable to load users.</td></tr>';
+    }
+  }
+
+  async function deleteUser(id, email) {
+    if (!confirm('Delete ' + email + '? This removes all their preferences.')) return;
+    try {
+      var res = await fetch('/api/admin/users/' + encodeURIComponent(id), { method: 'DELETE', credentials: 'same-origin' });
+      if (res.status === 401) { window.location.href = '/login'; return; }
+      if (!res.ok) {
+        var err = await res.json().catch(function () { return {}; });
+        throw new Error(err.error || 'Delete failed');
+      }
+      showToast('User deleted');
+      init();
+    } catch (e) {
+      showToast(e.message || 'Delete failed', 'error');
+    }
+  }
+
+  async function logout() {
+    await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    window.location.href = '/login';
+  }
+
+  init();
+</script>
+</body>
+</html>

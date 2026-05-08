@@ -1,0 +1,38 @@
+{
+  "id": "instill:accessibility-v1",
+  "name": "Accessibility (a11y)",
+  "description": "WCAG 2.1 AA rules for AI assistants building web interfaces. Ensures alt text, keyboard navigation, ARIA usage, and colour contrast are addressed in every UI task.",
+  "version": "1.0.0",
+  "tags": ["accessibility", "a11y", "wcag", "web", "ui"],
+  "author": "Instill AI",
+  "preferences": [
+    {
+      "category": "accessibility",
+      "rule": "Every `<img>` must have a descriptive `alt` attribute. Decorative images use `alt=\"\"` with `aria-hidden=\"true\"`."
+    },
+    {
+      "category": "accessibility",
+      "rule": "All interactive elements (buttons, links, inputs) must be reachable and operable via keyboard alone. Never suppress focus outlines without providing a visible alternative."
+    },
+    {
+      "category": "accessibility",
+      "rule": "Use semantic HTML first (nav, main, article, button, label) before reaching for ARIA. ARIA supplements; it does not replace semantics."
+    },
+    {
+      "category": "accessibility",
+      "rule": "Colour contrast must meet WCAG AA: 4.5:1 for normal text, 3:1 for large text and UI components. Never convey information by colour alone."
+    },
+    {
+      "category": "accessibility",
+      "rule": "Form inputs must have associated `<label>` elements or `aria-label`. Placeholder text is not a label."
+    },
+    {
+      "category": "accessibility",
+      "rule": "Dynamic content updates (toasts, modals, errors) must use `aria-live` regions or focus management so screen reader users are notified."
+    },
+    {
+      "category": "accessibility",
+      "rule": "Skip-navigation links must be the first focusable element on every page."
+    }
+  ]
+}

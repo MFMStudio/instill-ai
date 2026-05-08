@@ -1,0 +1,14 @@
+# ACE namespace binding for this repository.
+# Repo convention slug: `instill-ai`. Your CLI default namespace is often `mfm-studio`
+# — create `instill-ai` in the ACE dashboard if you want a dedicated bucket.
+
+project_name: Instill AI
+repository: ai-consistency-platform
+ace_namespace_slug: instill-ai
+ace_namespace_registered: true
+ace_plan_name: "Instill AI — platform roadmap"
+alternate_slugs:
+  - ai-consistency-platform
+public_roadmap_url: /roadmap
+source_html: public/roadmap.html
+markdown_mirror: ace/instill-ai-roadmap.md

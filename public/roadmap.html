@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Instill AI platform roadmap — governance, integrations, ops, and commercial tracks for the self-hosted preference server." />
+  <title>Instill AI — Roadmap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/signal.css?v=roadmap-20260507" />
+  <style id="roadmap-styles">
+    .page-hero { padding: 80px 0 56px; border-bottom: 1px solid var(--rule); }
+    .page-hero h1 { font-size: clamp(40px, 6vw, 72px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.0; margin-top: 20px; }
+    .page-hero p { font-size: 17px; color: var(--ink-2); max-width: 62ch; margin-top: 20px; line-height: 1.6; }
+
+    .summary-panel {
+      margin: 48px 0 0;
+      padding: 36px 40px;
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      background: var(--paper-2);
+    }
+    .summary-panel h2 { font-size: clamp(22px, 2.5vw, 28px); margin-bottom: 16px; letter-spacing: -0.02em; }
+    .summary-panel .summary-lead { font-size: 15px; color: var(--ink-2); line-height: 1.65; max-width: 75ch; }
+    .summary-panel ul { margin: 20px 0 0; padding: 0; list-style: none; }
+    .summary-panel li { position: relative; padding-left: 18px; margin-bottom: 10px; font-size: 14.5px; color: var(--ink-2); line-height: 1.55; }
+    .summary-panel li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 16px 28px; margin: 40px 0 24px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .legend span { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); }
+    .legend i { width: 10px; height: 10px; border-radius: 50%; }
+    .lg-live { background: var(--signal); }
+    .lg-next { background: oklch(0.55 0.12 250); }
+    .lg-plan { background: var(--rule-strong); }
+
+    .pillar { padding: 64px 0 16px; }
+    .pillar h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 500; letter-spacing: -0.025em; margin-bottom: 8px; }
+    .pillar > p { font-size: 14.5px; color: var(--ink-2); max-width: 62ch; line-height: 1.6; margin-bottom: 28px; }
+
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .road-card {
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      padding: 24px 26px;
+      background: var(--paper);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 100%;
+    }
+    .road-card header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .road-card h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; margin: 0; max-width: 20ch; }
+    .pill {
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .pill-live { background: var(--signal-soft); color: var(--signal-ink); border: 1px solid oklch(0.78 0.15 118 / 0.35); }
+    .pill-next { background: oklch(0.94 0.04 250 / 0.5); color: oklch(0.35 0.14 250); border: 1px solid oklch(0.7 0.08 250 / 0.4); }
+    .pill-plan { background: var(--paper-2); color: var(--muted); border: 1px solid var(--rule); }
+
+    .road-card .desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.55; margin: 0; flex: 1; }
+    .road-card .outcome { font-size: 12px; color: var(--ink-3); font-family: var(--font-mono); margin: 0; padding-top: 8px; border-top: 1px solid var(--rule); line-height: 1.5; }
+
+    .footnote-section { padding: 72px 0 96px; border-top: 1px solid var(--rule); margin-top: 48px; }
+    .footnote-section h2 { font-size: 22px; margin-bottom: 12px; }
+    .footnote-section p { font-size: 14px; color: var(--ink-2); max-width: 65ch; line-height: 1.65; }
+
+    @media (max-width: 600px) {
+      .summary-panel { padding: 28px 22px; }
+    }
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:300;padding:10px 18px;background:var(--ink);color:var(--paper);font-weight:600;font-size:14px;text-decoration:none;border-radius:0 0 8px 8px;">Skip to content</a>
+<div class="shell">
+
+  <header class="topbar">
+    <a href="/home" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-meta">Instill AI <span class="v">v2.0</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/home">Overview</a>
+      <a href="/integrations">Integrations</a>
+      <a href="/tools">Tools</a>
+      <a href="/roadmap" class="active">Roadmap</a>
+      <a href="/pricing">Pricing</a>
+    </nav>
+    <div class="top-actions" id="topbar-actions">
+      <button type="button" class="btn-theme" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button>
+      <a href="/login" class="btn btn-ghost btn-sm">Sign in</a>
+      <a href="/login#register" class="btn btn-primary btn-sm">Get started <span class="arrow">→</span></a>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <section class="page-hero wrap">
+      <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">Platform</span></div>
+      <h1>Roadmap &amp; direction.</h1>
+      <p>
+        This page captures <strong>every major capability</strong> we want Instill AI to grow into — from governance and team workflows to webhooks, telemetry, and packaging.
+        <strong>Shipped today</strong> is the self-hosted preference core (MCP, API, dashboard, billing hooks). Everything else is sequenced honestly below — not vaporware, but not all built yet.
+      </p>
+
+      <div class="summary-panel" id="feedback-summary">
+        <h2>Feedback &amp; summary</h2>
+        <p class="summary-lead">
+          Instill wins when preferences are treated as <strong>infrastructure</strong>, not chat snippets: durable, scoped, reviewable, and observable without becoming generic MCP hosting.
+          The roadmap clusters work into four pillars so we don’t dilute the core story.
+        </p>
+        <ul>
+          <li><strong>Governance &amp; lifecycle</strong> — Versioning, scopes, lint, semantic search, and team approvals turn rules into policy you can trust in regulated settings.</li>
+          <li><strong>Distribution</strong> — Curated bundles and webhooks make onboarding fast and connect preferences to the rest of your stack.</li>
+          <li><strong>Ops &amp; trust</strong> — Privacy-preserving telemetry, secret references, and audit exports answer “who changed what” without shipping preference bodies to third parties.</li>
+          <li><strong>Commercial shape</strong> — Managed hosting and air-gapped enterprise packaging meet buyers who cannot run raw Node/SQLite themselves or cannot touch the public internet.</li>
+        </ul>
+      </div>
+
+      <div class="legend" aria-hidden="true">
+        <span><i class="lg-live"></i> Live in product today</span>
+        <span><i class="lg-next"></i> Next · scoped for upcoming releases</span>
+        <span><i class="lg-plan"></i> Planned · design &amp; schema TBD</span>
+      </div>
+    </section>
+
+    <section class="wrap pillar">
+      <h2>Shipped core · v2 baseline</h2>
+      <p>What you get when you deploy the current open distribution — the foundation every other item extends.</p>
+      <div class="roadmap-grid">
+        <article class="road-card">
+          <header><h3>MCP preference tools</h3><span class="pill pill-live">Live</span></header>
+          <p class="desc">Streamable HTTP MCP with save, list, get, update, delete, search, category filters, and session reset — preferences injected across assistants.</p>
+          <p class="outcome">Outcome · One authenticated endpoint for Cursor, Claude, and compatible clients.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>REST &amp; OpenAPI</h3><span class="pill pill-live">Live</span></header>
+          <p class="desc">Dashboard-backed CRUD plus OpenAPI for ChatGPT Actions and custom integrations.</p>
+          <p class="outcome">Outcome · Same rules for MCP-native and HTTP-only stacks.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>Categories &amp; keyword search</h3><span class="pill pill-live">Live</span></header>
+          <p class="desc">Group rules by category; SQLite-backed text search today — semantic upgrades listed separately.</p>
+          <p class="outcome">Outcome · Organise large libraries before full semantic layers land.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>Teams &amp; admin</h3><span class="pill pill-live">Live</span></header>
+          <p class="desc">Per-user isolated stores, optional admin panel, API key rotation, Stripe plan hooks for paid tiers.</p>
+          <p class="outcome">Outcome · Shared deployment without shared preference text.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="wrap pillar">
+      <h2>Governance &amp; lifecycle</h2>
+      <p>Turn flat rules into managed policy: history, environment boundaries, quality gates, and structured collaboration.</p>
+      <div class="roadmap-grid">
+        <article class="road-card">
+          <header><h3>Versioning &amp; rollback</h3><span class="pill pill-next">Next</span></header>
+          <p class="desc">Immutable snapshots per preference or workspace, diff view, restore to any point in time; optional named releases.</p>
+          <p class="outcome">Outcome · Safe iteration when rules drive production behaviour.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>Scopes &amp; environments</h3><span class="pill pill-next">Next</span></header>
+          <p class="desc">Bind rules to repo, project, client, or env (dev/staging/prod) so <code>get_preferences</code> resolves context automatically.</p>
+          <p class="outcome">Outcome · Same mental model as feature flags — fewer conflicting globals.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>Rule lint &amp; CI checks</h3><span class="pill pill-plan">Planned</span></header>
+          <p class="desc">Validate packs for conflicts, unsafe instructions, and contradictions; CLI + optional MCP tool for pre-merge gates.</p>
+          <p class="outcome">Outcome · Catch bad rules before they reach assistants.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>Semantic search &amp; clustering</h3><span class="pill pill-plan">Planned</span></header>
+          <p class="desc">Embeddings over rule text for “what applies here?” and duplicate detection; optional local model or bring-your-own endpoint.</p>
+          <p class="outcome">Outcome · Large org libraries stay searchable without hand-tagging everything.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>Team workflow &amp; audit</h3><span class="pill pill-plan">Planned</span></header>
+          <p class="desc">Draft → review → approve for Business-tier governance; full audit trail of who changed what and when (ties to versioning).</p>
+          <p class="outcome">Outcome · Defensible changes for compliance-heavy teams.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="wrap pillar">
+      <h2>Distribution &amp; integrations</h2>
+      <p>Ship templates faster and notify downstream systems when preferences move.</p>
+      <div class="roadmap-grid">
+        <article class="road-card">
+          <header><h3>Policy bundles marketplace</h3><span class="pill pill-plan">Planned</span></header>
+          <p class="desc">Curated starter packs (security, accessibility, stack-specific); start free templates, optional verified bundles later.</p>
+          <p class="outcome">Outcome · Minutes to value for new workspaces.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>Webhooks &amp; event stream</h3><span class="pill pill-plan">Planned</span></header>
+          <p class="desc"><code>preference.created|updated|deleted</code> to HTTPS, Slack, or queue adapters — sync wikis, tickets, or internal ops without polling.</p>
+          <p class="outcome">Outcome · Preferences participate in org workflows.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="wrap pillar">
+      <h2>Ops &amp; trust</h2>
+      <p>Operate with confidence: observe health without leaking content; keep secrets out of free-text rules.</p>
+      <div class="roadmap-grid">
+        <article class="road-card">
+          <header><h3>Usage &amp; health telemetry</h3><span class="pill pill-plan">Planned</span></header>
+          <p class="desc">Aggregated metrics only — tool call counts, latency buckets, error rates, storage growth. <strong>No rule body</strong> leaves the deployment unless you opt in.</p>
+          <p class="outcome">Outcome · Admins justify spend and debug MCP paths safely.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>Secrets separation</h3><span class="pill pill-plan">Planned</span></header>
+          <p class="desc">Reference secrets by key from env, Vault, or Doppler-style providers — preferences hold pointers, not tokens.</p>
+          <p class="outcome">Outcome · Rotation and audit without grep-ing rule text for keys.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>Audit exports API</h3><span class="pill pill-plan">Planned</span></header>
+          <p class="desc">Machine-readable export for SIEM and retention — extends team audit trail with scheduled dumps.</p>
+          <p class="outcome">Outcome · Fits enterprise evidence requests without bespoke consulting.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="wrap pillar">
+      <h2>Commercial packaging</h2>
+      <p>Reach buyers who won’t self-host raw Node — without abandoning the open core.</p>
+      <div class="roadmap-grid">
+        <article class="road-card">
+          <header><h3>Managed hosting tier</h3><span class="pill pill-plan">Planned</span></header>
+          <p class="desc">Same binaries, operator-run: backups, upgrades, TLS — optional separate SKU from self-host software.</p>
+          <p class="outcome">Outcome · Revenue from teams that need uptime without owning the metal.</p>
+        </article>
+        <article class="road-card">
+          <header><h3>Air-gapped / enterprise bundle</h3><span class="pill pill-plan">Planned</span></header>
+          <p class="desc">Offline docs, SAML-forward packaging, hardening guides, and install artefacts for environments without outbound internet.</p>
+          <p class="outcome">Outcome · Sell into regulated networks where SaaS defaults fail.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="footnote-section wrap">
+      <h2>Scope &amp; expectations</h2>
+      <p>
+        Implementing the full surface above is a <strong>multi-release programme</strong>, not a single pull request. Priority order will follow customer demand:
+        teams blocked on <strong>governance</strong> pull versioning and approvals forward; platform teams pull <strong>webhooks and telemetry</strong>; regulated buyers pull <strong>audit and air-gap</strong> packaging.
+        Watch this page and release notes as items graduate from Planned → Next → Live.
+      </p>
+      <p style="margin-top:20px;">
+        <a href="/pricing" class="btn btn-ghost btn-sm">View pricing</a>
+        <a href="/integrations" class="btn btn-primary btn-sm" style="margin-left:10px;">Integrations</a>
+      </p>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="brand" style="margin-bottom:16px;"><span class="brand-mark"></span><span>Instill AI</span></div>
+        <p style="font-size:13px;color:var(--ink-3);max-width:28ch;">Self-hosted preference server for the Model Context Protocol. Your rules. Every session.</p>
+      </div>
+      <div class="footer-col"><h5>Product</h5><a href="/home">Overview</a><a href="/integrations">Integrations</a><a href="/tools">Tools</a><a href="/roadmap">Roadmap</a><a href="/pricing">Pricing</a></div>
+      <div class="footer-col"><h5>Account</h5><a href="/login">Sign in</a><a href="/login#register">Register</a><a href="/dashboard">Dashboard</a><a href="/setup">Setup Guide</a></div>
+      <div class="footer-col"><h5>Legal</h5><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Instill AI · Self-hosted, your data, your rules</span><span>v2.0 · build 2026.05</span></div>
+  </footer>
+</div>
+<script src="/scroll-animations.js?v=pricing-tiers-20260507" defer></script>
+<script src="/theme.js"></script>
+<script src="/auth-nav.js" defer></script>
+</body>
+</html>

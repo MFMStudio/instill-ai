@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instill AI — Metrics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/signal.css" />
+  <style>
+    .hidden { display: none !important; }
+    .metrics-wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px 80px; }
+
+    .page-header {
+      padding: 40px 0 32px; border-bottom: 1px solid var(--rule); margin-bottom: 40px;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    .page-header h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 500; letter-spacing: -0.025em; line-height: 1.0; }
+    .page-header-note { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+
+    /* Stats */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+      background: var(--rule); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 32px;
+    }
+    .stat-card { background: var(--paper); padding: 24px 28px; }
+    .stat-label {
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px;
+    }
+    .stat-value { font-size: 36px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
+    .stat-sub { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+    /* Section heading */
+    .section-head {
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 14px; margin-top: 40px;
+    }
+    .section-head:first-of-type { margin-top: 0; }
+
+    /* Endpoint table */
+    .metrics-card {
+      background: var(--paper); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px;
+    }
+    .metrics-card table { width: 100%; border-collapse: collapse; }
+    .metrics-card th {
+      font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); padding: 12px 20px;
+      text-align: left; background: var(--paper-2);
+      border-bottom: 1px solid var(--rule);
+    }
+    .metrics-card td { padding: 12px 20px; font-size: 13.5px; color: var(--ink-2); border-bottom: 1px solid var(--rule); }
+    .metrics-card tr:last-child td { border-bottom: none; }
+    .metrics-card td:not(:first-child) { font-family: var(--font-mono); font-size: 12.5px; }
+    .ep-badge {
+      display: inline-flex; padding: 2px 9px; border-radius: 999px; font-size: 11px;
+      font-family: var(--font-mono); letter-spacing: 0.04em;
+      background: var(--paper-2); border: 1px solid var(--rule); color: var(--ink-3);
+    }
+    .ep-badge.mcp { background: oklch(0.18 0.04 118); border-color: oklch(0.35 0.10 118); color: oklch(0.78 0.19 118); }
+    .ep-badge.api { background: oklch(0.18 0.03 240); border-color: oklch(0.35 0.08 240); color: oklch(0.75 0.12 240); }
+    .error-rate-high { color: var(--danger); font-weight: 600; }
+    .error-rate-ok   { color: oklch(0.55 0.14 145); }
+
+    /* Sparkline chart */
+    .chart-wrap {
+      background: var(--paper); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 24px;
+    }
+    .chart-label {
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 14px;
+    }
+    .chart-canvas-wrap { overflow-x: auto; }
+    canvas#calls-chart { display: block; width: 100%; height: 120px; }
+
+    /* Top users */
+    .top-users-list { display: flex; flex-direction: column; gap: 8px; }
+    .top-user-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px; background: var(--paper); border: 1px solid var(--rule);
+      border-radius: var(--radius); font-size: 13px;
+    }
+    .top-user-email { flex: 1; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .top-user-calls { font-family: var(--font-mono); font-size: 12px; color: var(--ink); font-weight: 600; flex-shrink: 0; }
+    .top-user-errs  { font-family: var(--font-mono); font-size: 11px; color: var(--muted); flex-shrink: 0; }
+    .top-user-bar-wrap { width: 100px; height: 5px; background: var(--paper-3); border-radius: 999px; overflow: hidden; flex-shrink: 0; }
+    .top-user-bar { height: 100%; background: var(--signal); border-radius: 999px; }
+
+    /* Export row */
+    .export-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 32px; }
+    .btn-export {
+      background: transparent; border: 1px solid var(--rule-strong);
+      color: var(--ink-2); padding: 8px 16px; border-radius: 999px;
+      font-size: 12.5px; font-weight: 500; cursor: pointer; transition: background 0.15s;
+    }
+    .btn-export:hover { background: var(--paper-2); color: var(--ink); }
+    .export-hint { font-size: 12px; color: var(--muted); }
+
+    /* Privacy note */
+    .privacy-note {
+      background: var(--paper-2); border: 1px solid var(--rule);
+      border-radius: var(--radius); padding: 12px 16px;
+      font-size: 12.5px; color: var(--muted); line-height: 1.55;
+    }
+
+    .loading { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding: 32px 0; text-align: center; }
+
+    @media (max-width: 880px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:300;padding:10px 18px;background:var(--ink);color:var(--paper);font-weight:600;font-size:14px;text-decoration:none;border-radius:0 0 8px 8px;">Skip to content</a>
+<div class="shell" style="min-height:100vh;display:flex;flex-direction:column;">
+
+  <header class="topbar">
+    <a href="/home" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-meta">Instill AI <span class="v">v2.0</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/home">Overview</a>
+      <a href="/integrations">Integrations</a>
+      <a href="/tools">Tools</a>
+      <a href="/roadmap">Roadmap</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/setup">Setup</a>
+      <a href="/admin">Admin</a>
+      <a href="/metrics" class="active">Metrics</a>
+    </nav>
+    <div class="top-actions">
+      <button type="button" class="btn-theme" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button>
+      <span class="status"><span class="dot"></span>Connected</span>
+      <button type="button" onclick="logout()" class="btn btn-ghost btn-sm">Sign out</button>
+    </div>
+  </header>
+
+  <main id="main-content" style="flex:1;">
+    <div class="metrics-wrap">
+
+      <div class="page-header">
+        <div>
+          <div class="section-eyebrow" style="margin-bottom:10px;"><span class="eyebrow eyebrow-dot">Admin</span></div>
+          <h1>Platform Metrics</h1>
+          <p class="page-header-note">Aggregate counters only — no preference rule text is stored or logged.</p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="loadMetrics()">Refresh</button>
+      </div>
+
+      <!-- Lifetime totals -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total API calls</div><div class="stat-value" id="s-calls">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total errors</div><div class="stat-value" id="s-errors">—</div></div>
+        <div class="stat-card"><div class="stat-label">Active users (ever)</div><div class="stat-value" id="s-users">—</div></div>
+        <div class="stat-card"><div class="stat-label">Error rate (all time)</div><div class="stat-value" id="s-errrate" style="font-size:28px;padding-top:6px;">—</div></div>
+      </div>
+
+      <!-- Last 24h per endpoint -->
+      <div class="section-head">Last 24 hours — by endpoint</div>
+      <div class="metrics-card" id="endpoint-table-wrap">
+        <div class="loading">Loading…</div>
+      </div>
+
+      <!-- Hourly calls chart -->
+      <div class="chart-wrap">
+        <div class="chart-label">Hourly calls — last 48 hours (MCP + API)</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="calls-chart" height="120" aria-label="Hourly call chart" role="img"></canvas>
+        </div>
+      </div>
+
+      <!-- Top users (MCP, last 24h) -->
+      <div class="section-head">Top users by MCP calls — last 24 hours</div>
+      <div id="top-users-wrap" class="metrics-card" style="padding:16px 20px;">
+        <div class="loading">Loading…</div>
+      </div>
+
+      <!-- Export -->
+      <div class="section-head">Export</div>
+      <div class="export-row">
+        <button class="btn-export" onclick="exportMetrics('csv', 7)">Download CSV — 7 days</button>
+        <button class="btn-export" onclick="exportMetrics('csv', 30)">Download CSV — 30 days</button>
+        <button class="btn-export" onclick="exportMetrics('ndjson', 7)">Download NDJSON — 7 days</button>
+        <span class="export-hint">Aggregates only · no user data beyond email in "Top users" section</span>
+      </div>
+
+      <!-- Privacy note -->
+      <div class="privacy-note">
+        <strong>Privacy:</strong> Metrics store call counts, error counts, and latency aggregates per endpoint per hour. No preference rule text, no request bodies, and no IP addresses are stored in the metrics table. The "Top users" view links user email to MCP call volume only.
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+<script src="/theme.js"></script>
+<script>
+  function showToast(msg, type) {
+    type = type || 'success';
+    var c = document.getElementById('toast-container');
+    var t = document.createElement('div');
+    t.className = 'toast toast-' + type;
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 2600);
+  }
+
+  function fmtNum(n) {
+    if (n == null || isNaN(n)) return '—';
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+    return String(n);
+  }
+
+  async function loadMetrics() {
+    try {
+      var res = await fetch('/api/admin/metrics', { credentials: 'same-origin' });
+      if (res.status === 401 || res.status === 403) { window.location.href = '/login'; return; }
+      if (!res.ok) throw new Error('Failed to load metrics');
+      var data = await res.json();
+
+      // Totals
+      var t = data.totals || {};
+      document.getElementById('s-calls').textContent  = fmtNum(t.totalCalls);
+      document.getElementById('s-errors').textContent = fmtNum(t.totalErrors);
+      document.getElementById('s-users').textContent  = fmtNum(t.activeUsers);
+      var errRate = t.totalCalls > 0 ? (t.totalErrors / t.totalCalls * 100).toFixed(1) : '0.0';
+      document.getElementById('s-errrate').textContent = errRate + '%';
+
+      // Endpoint table
+      renderEndpointTable(data.last24h || []);
+
+      // Chart
+      renderChart(data.series || []);
+
+      // Top users
+      renderTopUsers(data.topUsers || []);
+
+    } catch (e) {
+      showToast(e.message || 'Could not load metrics', 'error');
+    }
+  }
+
+  function renderEndpointTable(endpoints) {
+    var wrap = document.getElementById('endpoint-table-wrap');
+    if (!endpoints.length) {
+      wrap.innerHTML = '<div class="loading">No data yet. Metrics accumulate as the platform receives requests.</div>';
+      return;
+    }
+    var rows = endpoints.map(function (ep) {
+      var cls = ep.endpoint === 'mcp' ? 'mcp' : ep.endpoint === 'api' ? 'api' : '';
+      var errCls = ep.errorRate > 5 ? 'error-rate-high' : 'error-rate-ok';
+      return '<tr>' +
+        '<td><span class="ep-badge ' + cls + '">' + ep.endpoint + '</span></td>' +
+        '<td>' + fmtNum(ep.calls) + '</td>' +
+        '<td class="' + errCls + '">' + ep.errorRate.toFixed(1) + '%</td>' +
+        '<td>' + ep.avgLatencyMs + ' ms</td>' +
+        '<td>' + ep.p99LatencyMs + ' ms</td>' +
+        '</tr>';
+    }).join('');
+    wrap.innerHTML = '<table><thead><tr>' +
+      '<th>Endpoint</th><th>Calls</th><th>Error rate</th><th>Avg latency</th><th>P99 latency</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table>';
+  }
+
+  function renderChart(series) {
+    var canvas = document.getElementById('calls-chart');
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Aggregate by hour across mcp+api
+    var hourMap = {};
+    series.forEach(function (row) {
+      if (!['mcp', 'api'].includes(row.endpoint)) return;
+      hourMap[row.hour] = (hourMap[row.hour] || 0) + row.calls;
+    });
+
+    var hours = Object.keys(hourMap).sort();
+    var values = hours.map(function (h) { return hourMap[h]; });
+
+    if (!values.length) {
+      ctx.fillStyle = 'var(--muted, #888)';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('No data yet', canvas.width / 2, canvas.height / 2);
+      return;
+    }
+
+    // Resize canvas to display size
+    var rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width  = rect.width || 800;
+    canvas.height = 120;
+
+    var W = canvas.width, H = canvas.height;
+    var maxVal = Math.max(1, Math.max.apply(null, values));
+    var barW = Math.max(4, Math.floor((W - 40) / values.length) - 2);
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Grid line
+    ctx.strokeStyle = 'rgba(128,128,128,0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(40, 0); ctx.lineTo(40, H - 20); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(40, H - 20); ctx.lineTo(W, H - 20); ctx.stroke();
+
+    var isDark = document.documentElement.classList.contains('dark');
+    var barColor = isDark ? 'oklch(0.78 0.19 118)' : 'oklch(0.60 0.19 118)';
+
+    values.forEach(function (v, i) {
+      var barH = Math.max(2, Math.round((v / maxVal) * (H - 30)));
+      var x = 42 + i * (barW + 2);
+      var y = H - 20 - barH;
+      ctx.fillStyle = barColor;
+      ctx.fillRect(x, y, barW, barH);
+    });
+
+    // Max label
+    ctx.fillStyle = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)';
+    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(String(maxVal), 36, 12);
+    ctx.fillText('0', 36, H - 22);
+  }
+
+  function renderTopUsers(users) {
+    var wrap = document.getElementById('top-users-wrap');
+    if (!users.length) {
+      wrap.innerHTML = '<div class="loading">No MCP activity in the last 24 hours.</div>';
+      return;
+    }
+    var maxCalls = users[0].calls || 1;
+    wrap.innerHTML = '<div class="top-users-list">' +
+      users.map(function (u) {
+        var pct = Math.round((u.calls / maxCalls) * 100);
+        return '<div class="top-user-row">' +
+          '<span class="top-user-email">' + u.email + '</span>' +
+          '<div class="top-user-bar-wrap"><div class="top-user-bar" style="width:' + pct + '%"></div></div>' +
+          '<span class="top-user-calls">' + fmtNum(u.calls) + ' calls</span>' +
+          '<span class="top-user-errs">' + (u.errors || 0) + ' err</span>' +
+          '</div>';
+      }).join('') +
+      '</div>';
+  }
+
+  function exportMetrics(format, days) {
+    window.location.href = '/api/admin/metrics/export?format=' + format + '&days=' + days;
+  }
+
+  async function logout() {
+    await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    window.location.href = '/login';
+  }
+
+  loadMetrics();
+</script>
+</body>
+</html>

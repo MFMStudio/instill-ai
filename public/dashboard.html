@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instill AI — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/signal.css" />
+  <style>
+    /* ── Utilities ─────────────────────────────────────────── */
+    .hidden { display: none !important; }
+
+    /* ── Nav badge ─────────────────────────────────────────── */
+    .nav-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 18px; height: 18px; padding: 0 5px;
+      background: var(--signal); color: #14130f;
+      border-radius: 999px; font-size: 10px; font-weight: 700;
+      font-family: var(--font-mono); letter-spacing: 0; margin-left: 4px;
+    }
+
+    /* ── Page layout ────────────────────────────────────────── */
+    .dash-wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+
+    .page-header {
+      padding: 40px 0 32px;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 40px;
+      display: flex; justify-content: space-between; align-items: end; gap: 24px;
+    }
+    .page-header h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 500; letter-spacing: -0.025em; line-height: 1.0; }
+    .page-header .user-email { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-top: 6px; letter-spacing: 0.04em; }
+
+    /* ── Error banner ───────────────────────────────────────── */
+    .error-banner {
+      background: oklch(0.95 0.04 25); border: 1px solid oklch(0.85 0.10 25);
+      border-radius: var(--radius-lg); padding: 14px 20px;
+      color: oklch(0.40 0.14 25); font-size: 14px; margin-bottom: 24px; font-weight: 500;
+    }
+
+    /* ── Stats grid ─────────────────────────────────────────── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+      background: var(--rule); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--paper); padding: 24px 28px;
+    }
+    .stat-label {
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px;
+    }
+    .stat-value {
+      font-size: 36px; font-weight: 600; letter-spacing: -0.03em;
+      line-height: 1; color: var(--ink);
+    }
+
+    /* ── Key banner ─────────────────────────────────────────── */
+    .key-banner {
+      background: var(--ink); color: var(--paper); border-radius: var(--radius-lg);
+      padding: 20px 24px; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .key-banner .key-label {
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: oklch(0.62 0.01 100); flex-shrink: 0;
+    }
+    .key-banner code {
+      font-family: var(--font-mono); font-size: 13px; color: var(--paper);
+      background: oklch(0.22 0.01 100); padding: 6px 14px;
+      border-radius: var(--radius); flex: 1; min-width: 200px;
+      letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .key-banner .key-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-key {
+      background: transparent; border: 1px solid oklch(0.35 0.01 100);
+      color: var(--paper); padding: 6px 14px; border-radius: 999px;
+      font-size: 12.5px; font-family: var(--font-sans); font-weight: 500;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-key:hover { background: oklch(0.22 0.01 100); }
+    .btn-key-danger {
+      background: transparent; border: 1px solid oklch(0.50 0.14 25);
+      color: oklch(0.80 0.10 25);
+    }
+    .btn-key-danger:hover { background: oklch(0.22 0.01 100); }
+
+    /* ── Endpoint row ───────────────────────────────────────── */
+    .endpoint-card {
+      background: var(--paper); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 24px;
+    }
+    .endpoint-card .card-label {
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 14px;
+    }
+    .endpoint-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+    }
+    .endpoint-row:last-of-type { margin-bottom: 0; }
+    .endpoint-row code {
+      font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-2);
+      background: var(--paper-2); border: 1px solid var(--rule);
+      padding: 6px 12px; border-radius: var(--radius); flex: 1;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .endpoint-row .btn-copy-ep {
+      background: transparent; border: 1px solid var(--rule-strong);
+      color: var(--ink-2); padding: 6px 12px; border-radius: 999px;
+      font-size: 12px; font-family: var(--font-sans); cursor: pointer;
+      white-space: nowrap; font-weight: 500; transition: background 0.15s;
+    }
+    .endpoint-row .btn-copy-ep:hover { background: var(--paper-2); }
+    .endpoint-hint {
+      font-size: 12.5px; color: var(--muted); margin-top: 12px;
+      border-top: 1px solid var(--rule); padding-top: 10px;
+    }
+    .endpoint-hint a { color: var(--signal-ink); text-decoration: underline; }
+
+    /* ── Secondary row ──────────────────────────────────────── */
+    #dashboard-secondary-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;
+    }
+    #dashboard-secondary-row:empty { display: none; }
+
+    .secondary-card {
+      background: var(--paper); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); padding: 20px 24px;
+    }
+    .card-label {
+      font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 16px;
+    }
+
+    /* Category breakdown */
+    .category-breakdown { display: flex; flex-direction: column; gap: 10px; }
+    .breakdown-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .breakdown-cat { font-weight: 500; min-width: 100px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .breakdown-bar-wrap { flex: 1; height: 6px; background: var(--paper-2); border-radius: 999px; overflow: hidden; border: 1px solid var(--rule); }
+    .breakdown-bar { height: 100%; background: var(--signal); border-radius: 999px; transition: width 0.3s ease; }
+    .breakdown-count { font-family: var(--font-mono); font-size: 11px; color: var(--muted); min-width: 20px; text-align: right; flex-shrink: 0; }
+
+    /* Recent list */
+    .recent-list { list-style: none; }
+    .recent-item { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--rule); }
+    .recent-item:last-child { border-bottom: none; }
+    .recent-rule { font-size: 13.5px; color: var(--ink-2); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .recent-meta { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); flex-shrink: 0; white-space: nowrap; }
+
+    /* ── Search ─────────────────────────────────────────────── */
+    .search-bar { margin-bottom: 24px; }
+    .search-bar input { max-width: 480px; }
+
+    /* ── Pref groups ────────────────────────────────────────── */
+    .pref-group { margin-bottom: 32px; }
+
+    .pref-group-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 2px solid var(--ink); margin-bottom: 0;
+    }
+    .pref-group-label-text {
+      font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--ink); font-weight: 600; flex: 1;
+    }
+    .btn-rename {
+      background: transparent; border: 1px solid var(--rule-strong);
+      color: var(--ink-3); padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-family: var(--font-mono); cursor: pointer;
+      transition: background 0.15s; letter-spacing: 0.04em;
+    }
+    .btn-rename:hover { background: var(--paper-2); color: var(--ink); }
+
+    .category-rename-input {
+      font-family: var(--font-mono); font-size: 12px; flex: 1;
+      background: var(--paper); border: 1px solid var(--ink);
+      border-radius: var(--radius); padding: 4px 10px; color: var(--ink);
+    }
+    .category-rename-input:focus { outline: none; box-shadow: 0 0 0 3px oklch(0.78 0.19 118 / 0.2); }
+
+    .pref-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 8px; border-bottom: 1px solid var(--rule);
+      transition: background 0.1s;
+    }
+    .pref-item:hover { background: var(--paper-2); }
+    .pref-item.dragging { opacity: 0.4; }
+    .pref-item.drag-over { outline: 2px solid var(--signal); outline-offset: -2px; border-radius: var(--radius); }
+
+    .drag-handle {
+      cursor: grab; color: var(--muted); font-size: 14px; flex-shrink: 0;
+      user-select: none; padding: 2px;
+    }
+    .drag-handle:active { cursor: grabbing; }
+
+    .pref-rule { flex: 1; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
+
+    .pref-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .btn-icon-edit, .btn-icon-danger {
+      background: transparent; border: 1px solid transparent;
+      border-radius: var(--radius); padding: 4px 8px;
+      font-size: 13px; cursor: pointer; line-height: 1;
+      transition: background 0.1s, border-color 0.1s; color: var(--muted);
+    }
+    .btn-icon-edit:hover { background: var(--paper-3); border-color: var(--rule-strong); color: var(--ink); }
+    .btn-icon-danger:hover { background: oklch(0.95 0.04 25); border-color: oklch(0.85 0.10 25); color: var(--danger); }
+
+    /* ── Scope badge ────────────────────────────────────────── */
+    .scope-badge {
+      font-family: var(--font-mono); font-size: 10px; color: var(--muted);
+      background: var(--paper-2); border: 1px solid var(--rule);
+      border-radius: 999px; padding: 2px 8px; white-space: nowrap;
+      flex-shrink: 0; letter-spacing: 0.03em;
+    }
+
+    /* ── Empty / loading states ─────────────────────────────── */
+    .empty-state {
+      text-align: center; padding: 64px 24px; color: var(--muted);
+      font-size: 14px; border: 1px dashed var(--rule); border-radius: var(--radius-lg);
+    }
+    .empty-state p { margin-bottom: 16px; line-height: 1.55; }
+    .loading {
+      text-align: center; padding: 48px 24px;
+      font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Modal ─────────────────────────────────────────────── */
+    .modal {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      background: oklch(0.14 0.02 80 / 0.5); backdrop-filter: blur(4px);
+      padding: 24px;
+    }
+    .modal.hidden { display: none !important; }
+    .modal-card {
+      background: var(--paper); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); padding: 32px;
+      width: 100%; max-width: 480px;
+      box-shadow: 0 24px 48px -12px oklch(0.14 0.02 80 / 0.3);
+    }
+    .modal-card h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.015em; margin-bottom: 24px; }
+    .modal-card label {
+      display: block; font-family: var(--font-mono); font-size: 10.5px;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted);
+      margin-bottom: 6px; margin-top: 18px;
+    }
+    .modal-card label:first-of-type { margin-top: 0; }
+    .modal-card input, .modal-card textarea {
+      width: 100%; background: var(--paper); border: 1px solid var(--rule-strong);
+      border-radius: var(--radius); padding: 10px 14px;
+      font-size: 14px; color: var(--ink); font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s; resize: vertical;
+    }
+    .modal-card input:focus, .modal-card textarea:focus {
+      outline: none; border-color: var(--ink);
+      box-shadow: 0 0 0 4px oklch(0.78 0.19 118 / 0.2);
+    }
+    .modal-actions {
+      display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px;
+      padding-top: 20px; border-top: 1px solid var(--rule);
+    }
+    .modal-actions .btn-cancel {
+      background: transparent; border: 1px solid var(--rule-strong);
+      color: var(--ink); padding: 10px 18px; border-radius: 999px;
+      font-size: 13.5px; font-weight: 500; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .modal-actions .btn-cancel:hover { background: var(--paper-2); }
+    .modal-actions .btn-submit {
+      background: var(--ink); color: var(--paper); padding: 10px 20px;
+      border-radius: 999px; border: none; font-size: 13.5px; font-weight: 500;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .modal-actions .btn-submit:hover { background: #000; }
+
+    /* ── History drawer ─────────────────────────────────────── */
+    .history-drawer {
+      position: fixed; inset: 0 0 0 auto; z-index: 200;
+      width: min(480px, 100vw);
+      background: var(--paper); border-left: 1px solid var(--rule);
+      box-shadow: -12px 0 40px -8px oklch(0.14 0.02 80 / 0.18);
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    .history-drawer.open { transform: translateX(0); }
+    .history-drawer-overlay {
+      position: fixed; inset: 0; z-index: 190;
+      background: oklch(0.14 0.02 80 / 0.35); backdrop-filter: blur(2px);
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .history-drawer-overlay.open { opacity: 1; pointer-events: auto; }
+    .drawer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px; border-bottom: 1px solid var(--rule); flex-shrink: 0;
+    }
+    .drawer-header h3 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+    .drawer-rule-preview {
+      padding: 12px 24px; background: var(--paper-2);
+      border-bottom: 1px solid var(--rule); flex-shrink: 0;
+      font-size: 12.5px; color: var(--ink-2); line-height: 1.5;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .btn-drawer-close {
+      background: transparent; border: 1px solid var(--rule-strong);
+      color: var(--ink-2); width: 30px; height: 30px; border-radius: 999px;
+      font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .btn-drawer-close:hover { background: var(--paper-2); color: var(--ink); }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+    .history-timeline { position: relative; padding-left: 20px; }
+    .history-timeline::before {
+      content: ''; position: absolute; left: 6px; top: 12px; bottom: 12px;
+      width: 1px; background: var(--rule);
+    }
+    .history-rev {
+      position: relative; margin-bottom: 20px;
+      background: var(--paper); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); padding: 14px 16px;
+    }
+    .history-rev::before {
+      content: ''; position: absolute; left: -18px; top: 18px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--rule); border: 2px solid var(--paper);
+    }
+    .history-rev.is-current::before { background: var(--signal); }
+    .history-rev-meta {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;
+    }
+    .history-rev-ver {
+      font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+      background: var(--paper-2); border: 1px solid var(--rule);
+      border-radius: 999px; padding: 2px 8px; color: var(--ink-2); letter-spacing: 0.04em;
+    }
+    .history-rev-ver.current-badge {
+      background: var(--signal); color: #14130f; border-color: transparent;
+    }
+    .history-rev-time {
+      font-family: var(--font-mono); font-size: 10.5px; color: var(--muted);
+    }
+    .history-rev-cat {
+      font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3);
+      background: var(--paper-3); border-radius: 999px; padding: 2px 8px;
+      border: 1px solid var(--rule);
+    }
+    .history-rev-rule {
+      font-size: 12.5px; color: var(--ink-2); line-height: 1.5;
+      margin-bottom: 10px; padding: 8px 10px; background: var(--paper-2);
+      border-radius: var(--radius); border: 1px solid var(--rule);
+    }
+    .btn-restore {
+      background: transparent; border: 1px solid var(--rule-strong);
+      color: var(--ink-2); padding: 5px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-restore:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+    /* ── Webhooks section ───────────────────────────────────── */
+    .webhooks-card {
+      background: var(--paper); border: 1px solid var(--rule);
+      border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 24px;
+    }
+    .webhooks-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; gap: 12px;
+    }
+    .webhooks-card-header .card-label { margin-bottom: 0; }
+    .btn-add-webhook {
+      background: transparent; border: 1px solid var(--rule-strong);
+      color: var(--ink-2); padding: 5px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-add-webhook:hover { background: var(--paper-2); color: var(--ink); }
+    .webhook-list { display: flex; flex-direction: column; gap: 10px; }
+    .webhook-row {
+      background: var(--paper-2); border: 1px solid var(--rule);
+      border-radius: var(--radius); padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .webhook-url {
+      font-family: var(--font-mono); font-size: 12px; color: var(--ink-2);
+      flex: 1; min-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .webhook-events { display: flex; gap: 4px; flex-wrap: wrap; }
+    .webhook-event-badge {
+      font-family: var(--font-mono); font-size: 10px; padding: 2px 7px;
+      border-radius: 999px; background: var(--paper-3); border: 1px solid var(--rule);
+      color: var(--ink-3); white-space: nowrap;
+    }
+    .webhook-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-wh-test, .btn-wh-del {
+      background: transparent; border: 1px solid var(--rule-strong);
+      color: var(--ink-3); padding: 4px 10px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-wh-test:hover { background: var(--paper-3); color: var(--ink); }
+    .btn-wh-del:hover { background: oklch(0.95 0.04 25); border-color: oklch(0.85 0.10 25); color: var(--danger); }
+    .webhook-enabled-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+      background: oklch(0.65 0.17 145);
+    }
+    .webhook-enabled-dot.disabled { background: var(--rule-strong); }
+    .webhooks-empty {
+      font-size: 13px; color: var(--muted); text-align: center; padding: 20px 0;
+    }
+
+    /* ── Webhook modal extras ───────────────────────────────── */
+    .events-check-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .events-check-label {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 12px; color: var(--ink-2);
+      cursor: pointer; text-transform: none; letter-spacing: 0;
+      margin-top: 0;
+    }
+    .events-check-label input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--signal); }
+
+    /* ── Status pills ───────────────────────────────────────── */
+    .status-pill {
+      display: inline-flex; align-items: center;
+      padding: 2px 9px; border-radius: 999px; font-size: 10px; font-weight: 600;
+      font-family: var(--font-mono); letter-spacing: 0.04em; flex-shrink: 0;
+    }
+    .pill-draft { background: var(--paper-3); color: var(--muted); border: 1px solid var(--rule-strong); }
+    .pill-pending { background: oklch(0.95 0.08 60); color: oklch(0.40 0.15 60); border: 1px solid oklch(0.85 0.12 60 / 0.4); }
+    .btn-submit-review {
+      background: transparent; border: 1px solid var(--rule-strong);
+      color: var(--ink-3); padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-family: var(--font-mono); cursor: pointer;
+      transition: all 0.15s; letter-spacing: 0.04em; flex-shrink: 0;
+    }
+    .btn-submit-review:hover { background: oklch(0.95 0.08 60); border-color: oklch(0.85 0.12 60); color: oklch(0.40 0.15 60); }
+
+    /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 880px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      #dashboard-secondary-row { grid-template-columns: 1fr; }
+      .key-banner { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 560px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .pref-item { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:300;padding:10px 18px;background:var(--ink);color:var(--paper);font-weight:600;font-size:14px;text-decoration:none;border-radius:0 0 8px 8px;">Skip to content</a>
+<div class="shell" style="min-height:100vh;display:flex;flex-direction:column;">
+
+  <header class="topbar">
+    <a href="/home" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-meta">Instill AI <span class="v">v2.0</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/home">Overview</a>
+      <a href="/integrations">Integrations</a>
+      <a href="/tools">Tools</a>
+      <a href="/roadmap">Roadmap</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/dashboard" class="active" id="nav-dashboard-link">Dashboard <span class="nav-badge hidden" id="nav-pref-count"></span></a>
+      <a href="/setup">Setup</a>
+      <a href="/admin" id="admin-link" class="hidden">Admin</a>
+    </nav>
+    <div class="top-actions" id="topbar-actions">
+      <button type="button" class="btn-theme" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button>
+      <span class="status"><span class="dot"></span>Connected</span>
+      <button type="button" onclick="logout()" class="btn btn-ghost btn-sm">Sign out</button>
+    </div>
+  </header>
+
+  <main id="main-content" style="flex:1;padding-bottom:80px;">
+    <div class="dash-wrap">
+
+      <div id="dashboard-error" class="error-banner hidden" role="alert"></div>
+
+      <div class="page-header">
+        <div>
+          <div class="section-eyebrow" style="margin-bottom:10px;"><span class="eyebrow eyebrow-dot">Preferences</span></div>
+          <h1>My Preferences</h1>
+          <p class="user-email" id="user-email"></p>
+        </div>
+        <button type="button" class="btn btn-signal" onclick="openAddModal()">+ Add rule</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Preferences</div>
+          <div class="stat-value" id="stat-prefs">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Categories</div>
+          <div class="stat-value" id="stat-cats">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Words in rules</div>
+          <div class="stat-value" id="stat-words">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Last updated</div>
+          <div class="stat-value" id="stat-updated" style="font-size:20px;padding-top:8px;">—</div>
+        </div>
+      </div>
+
+      <!-- API Key -->
+      <div class="key-banner">
+        <span class="key-label">API Key</span>
+        <code id="api-key-display">••••••••••••••••••••••••••••••••</code>
+        <div class="key-actions">
+          <button type="button" class="btn-key" id="btn-toggle-key" onclick="toggleKey(event)" aria-label="Show API key">Show</button>
+          <button type="button" class="btn-key" onclick="copyKey(event)" aria-label="Copy API key">Copy</button>
+          <button type="button" class="btn-key btn-key-danger" onclick="regenerateKey()">Regenerate</button>
+        </div>
+      </div>
+
+      <!-- Endpoints -->
+      <div class="endpoint-card">
+        <div class="card-label">Endpoints</div>
+        <div class="endpoint-row">
+          <code id="mcp-endpoint-display"></code>
+          <button type="button" class="btn-copy-ep" onclick="copyEndpoint('mcp')">Copy MCP</button>
+        </div>
+        <div class="endpoint-row">
+          <code id="openapi-endpoint-display"></code>
+          <button type="button" class="btn-copy-ep" onclick="copyEndpoint('openapi')">Copy OpenAPI</button>
+        </div>
+        <p class="endpoint-hint">MCP for Claude/Cursor/IDEs · OpenAPI for ChatGPT Actions · <a href="/setup">Setup Guide →</a></p>
+      </div>
+
+      <!-- Webhooks -->
+      <div class="webhooks-card" id="webhooks-card">
+        <div class="webhooks-card-header">
+          <div class="card-label" style="margin-bottom:0">Outbound Webhooks</div>
+          <button type="button" class="btn-add-webhook" onclick="openWebhookModal()">+ Add endpoint</button>
+        </div>
+        <div class="webhook-list" id="webhook-list">
+          <div class="webhooks-empty" id="webhooks-loading">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Secondary row (category breakdown + recent) -->
+      <div id="dashboard-secondary-row"></div>
+
+      <!-- Search -->
+      <div class="search-bar">
+        <input type="search" id="search-input" class="field" placeholder="Search preferences…" autocomplete="off" oninput="filterPrefs()" aria-label="Search preferences" style="max-width:480px;" />
+      </div>
+
+      <!-- Preferences list -->
+      <div id="prefs-container">
+        <div class="loading">Loading preferences…</div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- History drawer overlay -->
+<div id="history-overlay" class="history-drawer-overlay" onclick="closeHistory()"></div>
+
+<!-- History drawer -->
+<div id="history-drawer" class="history-drawer" role="dialog" aria-modal="true" aria-label="Version history">
+  <div class="drawer-header">
+    <h3>Version History</h3>
+    <button class="btn-drawer-close" onclick="closeHistory()" aria-label="Close history">✕</button>
+  </div>
+  <div class="drawer-rule-preview" id="history-rule-preview">—</div>
+  <div class="drawer-body">
+    <div id="history-body"><div class="loading">Loading history…</div></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal hidden" role="presentation" onclick="if (event.target === this) closeModal()">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick="event.stopPropagation()">
+    <h2 id="modal-title">Add Preference</h2>
+    <form onsubmit="submitModal(event)">
+      <label for="pref-category">Category</label>
+      <input type="text" id="pref-category" placeholder="e.g. behaviour, coding style, workflow" required autocomplete="off" />
+      <label for="pref-rule">Rule</label>
+      <textarea id="pref-rule" placeholder="e.g. Be concise. Don't ramble." rows="3" required></textarea>
+      <label for="pref-scope-env">Environment (optional)</label>
+      <select id="pref-scope-env" class="field" style="width:100%;background:var(--paper);border:1px solid var(--rule-strong);border-radius:var(--radius);padding:10px 14px;font-size:14px;color:var(--ink);font-family:inherit;">
+        <option value="">Any</option>
+        <option value="dev">dev</option>
+        <option value="stage">stage</option>
+        <option value="prod">prod</option>
+      </select>
+      <label for="pref-scope-project">Project (optional)</label>
+      <input type="text" id="pref-scope-project" placeholder="e.g. my-project" autocomplete="off" />
+      <label for="pref-scope-client">Client (optional)</label>
+      <input type="text" id="pref-scope-client" placeholder="e.g. Acme Corp" autocomplete="off" />
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-submit" id="modal-submit-btn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Webhook modal -->
+<div id="webhook-modal" class="modal hidden" role="presentation" onclick="if(event.target===this)closeWebhookModal()">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="wh-modal-title" onclick="event.stopPropagation()">
+    <h2 id="wh-modal-title">Add Webhook Endpoint</h2>
+    <form onsubmit="submitWebhookModal(event)">
+      <label for="wh-url">Endpoint URL</label>
+      <input type="url" id="wh-url" placeholder="https://example.com/hooks/instill" required autocomplete="off" />
+      <label style="margin-top:18px;display:block">Events to subscribe</label>
+      <div class="events-check-group">
+        <label class="events-check-label"><input type="checkbox" name="wh-events" value="preference.created" checked> preference.created</label>
+        <label class="events-check-label"><input type="checkbox" name="wh-events" value="preference.updated" checked> preference.updated</label>
+        <label class="events-check-label"><input type="checkbox" name="wh-events" value="preference.deleted"> preference.deleted</label>
+      </div>
+      <div id="wh-secret-reveal" class="hidden" style="margin-top:18px;">
+        <label>Signing Secret (save this — shown once)</label>
+        <code id="wh-secret-code" style="display:block;font-family:var(--font-mono);font-size:12px;background:var(--paper-2);border:1px solid var(--rule);border-radius:var(--radius);padding:10px 14px;word-break:break-all;color:var(--ink-2);margin-top:4px;"></code>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeWebhookModal()">Cancel</button>
+        <button type="submit" class="btn-submit" id="wh-submit-btn">Add endpoint</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+<script src="/theme.js"></script>
+<script>
+  let apiKeyValue = '';
+  let keyVisible = false;
+  let modalLastFocus = null;
+  let editingPrefId = null;
+  let allPrefs = [];
+  let dragSrcId = null;
+
+  // ── Toast ───────────────────────────────────────────────────────────────
+  function showToast(msg, type) {
+    type = type || 'success';
+    var container = document.getElementById('toast-container');
+    var toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(function () {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 2600);
+  }
+
+  // ── Utilities ───────────────────────────────────────────────────────────
+  function escapeHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function showDashboardError(msg) {
+    var el = document.getElementById('dashboard-error');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+
+  function hideDashboardError() {
+    document.getElementById('dashboard-error').classList.add('hidden');
+  }
+
+  async function parseJsonRes(res) {
+    if (res.status === 401) {
+      window.location.href = '/login';
+      return null;
+    }
+    var data = await res.json().catch(function () { return {}; });
+    if (!res.ok) {
+      throw new Error((data && data.error) || 'Request failed (' + res.status + ')');
+    }
+    return data;
+  }
+
+  // ── Nav badge ───────────────────────────────────────────────────────────
+  function updateNavBadge(count) {
+    var badge = document.getElementById('nav-pref-count');
+    if (!badge) return;
+    badge.textContent = count;
+    if (count > 0) {
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+
+  // ── Relative time ────────────────────────────────────────────────────────
+  function relativeTime(isoStr) {
+    var diff = Date.now() - new Date(isoStr).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return mins + 'm ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    var days = Math.floor(hrs / 24);
+    if (days < 7) return days + 'd ago';
+    return new Date(isoStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  }
+
+  // ── Endpoint copy ────────────────────────────────────────────────────────
+  function copyEndpoint(type) {
+    var el = document.getElementById(type === 'mcp' ? 'mcp-endpoint-display' : 'openapi-endpoint-display');
+    navigator.clipboard.writeText(el.textContent);
+    showToast('Endpoint copied');
+  }
+
+  // ── Secondary row (category breakdown + recent) ──────────────────────────
+  function renderSecondaryRow(breakdown, recent) {
+    var container = document.getElementById('dashboard-secondary-row');
+    if (!breakdown.length && !recent.length) {
+      container.innerHTML = '';
+      return;
+    }
+
+    var breakdownHtml = '';
+    if (breakdown.length) {
+      var maxCount = breakdown[0].count;
+      breakdownHtml =
+        '<div class="card secondary-card">' +
+        '<div class="card-label">Category Breakdown</div>' +
+        '<div class="category-breakdown">' +
+        breakdown.map(function (b) {
+          var pct = Math.round((b.count / maxCount) * 100);
+          return (
+            '<div class="breakdown-row">' +
+            '<span class="breakdown-cat">' + escapeHtml(b.category) + '</span>' +
+            '<div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:' + pct + '%"></div></div>' +
+            '<span class="breakdown-count">' + b.count + '</span>' +
+            '</div>'
+          );
+        }).join('') +
+        '</div>' +
+        '</div>';
+    }
+
+    var recentHtml = '';
+    if (recent.length) {
+      recentHtml =
+        '<div class="card secondary-card">' +
+        '<div class="card-label">Recently Added</div>' +
+        '<ul class="recent-list">' +
+        recent.map(function (r) {
+          return (
+            '<li class="recent-item">' +
+            '<span class="recent-rule">' + escapeHtml(r.rule.length > 60 ? r.rule.slice(0, 60) + '…' : r.rule) + '</span>' +
+            '<span class="recent-meta">' + escapeHtml(r.category) + ' · ' + relativeTime(r.created_at) + '</span>' +
+            '</li>'
+          );
+        }).join('') +
+        '</ul>' +
+        '</div>';
+    }
+
+    container.innerHTML = breakdownHtml + recentHtml;
+  }
+
+  // ── Stats ───────────────────────────────────────────────────────────────
+  async function refreshStats() {
+    try {
+      var res = await fetch('/api/stats', { credentials: 'same-origin' });
+      var stats = await parseJsonRes(res);
+      if (!stats) return;
+      document.getElementById('stat-prefs').textContent = stats.prefCount;
+      document.getElementById('stat-cats').textContent = stats.catCount;
+      var totalWords = allPrefs.reduce(function (acc, p) {
+        return acc + p.rule.trim().split(/\s+/).filter(Boolean).length;
+      }, 0);
+      document.getElementById('stat-words').textContent = totalWords;
+      var updEl = document.getElementById('stat-updated');
+      if (stats.lastUpdated) {
+        updEl.textContent = relativeTime(stats.lastUpdated);
+        updEl.title = new Date(stats.lastUpdated).toLocaleString();
+      } else {
+        updEl.textContent = '—';
+      }
+      renderSecondaryRow(stats.categoryBreakdown || [], stats.recent || []);
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  // ── Init ────────────────────────────────────────────────────────────────
+  async function init() {
+    hideDashboardError();
+
+    try {
+      var responses = await Promise.all([
+        fetch('/api/me', { credentials: 'same-origin' }),
+        fetch('/api/preferences', { credentials: 'same-origin' }),
+        fetch('/api/key', { credentials: 'same-origin' }),
+        fetch('/api/stats', { credentials: 'same-origin' }),
+      ]);
+
+      for (var i = 0; i < responses.length; i++) {
+        if (responses[i].status === 401) {
+          window.location.href = '/login';
+          return;
+        }
+      }
+      if (!responses[0].ok || !responses[1].ok || !responses[2].ok || !responses[3].ok) {
+        throw new Error('Could not load your account data.');
+      }
+
+      var me = await responses[0].json();
+      var prefs = await responses[1].json();
+      var key = await responses[2].json();
+      var stats = await responses[3].json();
+
+      document.getElementById('user-email').textContent = me.email;
+      if (me.isAdmin) document.getElementById('admin-link').classList.remove('hidden');
+
+      apiKeyValue = key.apiKey;
+
+      document.getElementById('stat-prefs').textContent = stats.prefCount;
+      document.getElementById('stat-cats').textContent = stats.catCount;
+
+      var totalWords = prefs.reduce(function (acc, p) {
+        return acc + p.rule.trim().split(/\s+/).filter(Boolean).length;
+      }, 0);
+      document.getElementById('stat-words').textContent = totalWords;
+
+      var updEl = document.getElementById('stat-updated');
+      if (stats.lastUpdated) {
+        updEl.textContent = relativeTime(stats.lastUpdated);
+        updEl.title = new Date(stats.lastUpdated).toLocaleString();
+      } else {
+        updEl.textContent = '—';
+      }
+
+      var origin = window.location.origin;
+      document.getElementById('mcp-endpoint-display').textContent = origin + '/mcp';
+      document.getElementById('openapi-endpoint-display').textContent = origin + '/openapi.json';
+
+      renderSecondaryRow(stats.categoryBreakdown || [], stats.recent || []);
+
+      allPrefs = prefs;
+      updateNavBadge(prefs.length);
+      renderPrefs(prefs);
+    } catch (e) {
+      showDashboardError(e.message || 'Could not load your dashboard. Check your connection and refresh.');
+      document.getElementById('prefs-container').innerHTML = '<div class="empty-state">Unable to load preferences.</div>';
+    }
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────
+  function renderPrefs(prefs) {
+    var container = document.getElementById('prefs-container');
+    if (!prefs.length) {
+      container.innerHTML =
+        '<div class="empty-state">' +
+        '<p style="margin-bottom:12px">No preferences yet.<br/>' +
+        '<span style="font-size:12px;opacity:0.7">Try adding one: "Be concise", "Use TypeScript", "Always plan before coding"</span></p>' +
+        '<button type="button" class="btn btn-signal" onclick="openAddModal()">+ Add your first preference</button>' +
+        '</div>';
+      return;
+    }
+
+    var grouped = {};
+    var groupOrder = [];
+    for (var i = 0; i < prefs.length; i++) {
+      var p = prefs[i];
+      if (!grouped[p.category]) {
+        grouped[p.category] = [];
+        groupOrder.push(p.category);
+      }
+      grouped[p.category].push(p);
+    }
+
+    container.innerHTML = groupOrder.map(function (cat) {
+      var items = grouped[cat];
+      return (
+        '<div class="pref-group" data-category="' + escapeHtml(cat) + '">' +
+        '<div class="pref-group-header">' +
+        '<span class="pref-group-label-text">' + escapeHtml(cat) + '</span>' +
+        '<button type="button" class="btn-rename" data-cat="' + escapeHtml(cat) + '" onclick="startRename(this)" aria-label="Rename category">Rename</button>' +
+        '</div>' +
+        items.map(function (p) {
+          var scopeParts = [];
+          if (p.scope_env) scopeParts.push(escapeHtml(p.scope_env));
+          if (p.scope_project) scopeParts.push(escapeHtml(p.scope_project));
+          if (p.scope_client) scopeParts.push(escapeHtml(p.scope_client));
+          var scopeBadge = scopeParts.length
+            ? '<span class="scope-badge">' + scopeParts.join(' · ') + '</span>'
+            : '';
+          var statusPill = '';
+          var submitBtn = '';
+          if (p.status === 'draft') {
+            statusPill = '<span class="status-pill pill-draft">draft</span>';
+            submitBtn = '<button type="button" class="btn-submit-review" data-pref-id="' + escapeHtml(p.id) + '" onclick="submitForReview(this)" aria-label="Submit for review">Submit for review</button>';
+          } else if (p.status === 'pending_review') {
+            statusPill = '<span class="status-pill pill-pending">pending review</span>';
+          }
+          return (
+            '<div class="pref-item" data-id="' + escapeHtml(p.id) + '" data-category="' + escapeHtml(p.category) + '" data-rule="' + escapeHtml(p.rule) + '" data-scope-env="' + escapeHtml(p.scope_env || '') + '" data-scope-project="' + escapeHtml(p.scope_project || '') + '" data-scope-client="' + escapeHtml(p.scope_client || '') + '" data-status="' + escapeHtml(p.status || 'active') + '" draggable="true">' +
+            '<span class="drag-handle" aria-hidden="true">⠇</span>' +
+            '<span class="pref-rule">' + escapeHtml(p.rule) + '</span>' +
+            scopeBadge +
+            statusPill +
+            submitBtn +
+            '<div class="pref-actions">' +
+            '<button type="button" class="btn-icon-edit" data-pref-id="' + escapeHtml(p.id) + '" onclick="openHistory(this)" aria-label="View version history" title="History" style="font-size:12px;">🕐</button>' +
+            '<button type="button" class="btn-icon-edit" data-pref-id="' + escapeHtml(p.id) + '" onclick="openEditModal(this)" aria-label="Edit preference">✎</button>' +
+            '<button type="button" class="btn-icon-danger" data-pref-id="' + escapeHtml(p.id) + '" onclick="deletePreferenceFromButton(this)" aria-label="Delete preference">✕</button>' +
+            '</div>' +
+            '</div>'
+          );
+        }).join('') +
+        '</div>'
+      );
+    }).join('');
+
+    attachDragHandlers();
+  }
+
+  // ── Submit for review ────────────────────────────────────────────────────
+  async function submitForReview(btn) {
+    var prefId = btn.getAttribute('data-pref-id');
+    try {
+      var res = await fetch('/api/preferences/' + encodeURIComponent(prefId) + '/submit-review', {
+        method: 'POST',
+        credentials: 'same-origin',
+      });
+      var data = await parseJsonRes(res);
+      if (!data) return;
+      // Update local state
+      allPrefs = allPrefs.map(function (p) {
+        if (p.id === prefId) return Object.assign({}, p, { status: 'pending_review' });
+        return p;
+      });
+      renderPrefs(allPrefs);
+      showToast('Submitted for review');
+    } catch (e) {
+      showToast(e.message || 'Could not submit for review', 'error');
+    }
+  }
+
+  // ── Search / filter ─────────────────────────────────────────────────────
+  function filterPrefs() {
+    var query = (document.getElementById('search-input').value || '').trim().toLowerCase();
+    var container = document.getElementById('prefs-container');
+
+    if (!query) {
+      renderPrefs(allPrefs);
+      return;
+    }
+
+    var filtered = allPrefs.filter(function (p) {
+      return p.category.toLowerCase().includes(query) || p.rule.toLowerCase().includes(query);
+    });
+
+    if (!filtered.length) {
+      container.innerHTML = '<div class="empty-state">No preferences match your search.</div>';
+      return;
+    }
+
+    renderPrefs(filtered);
+  }
+
+  // ── Drag and drop ───────────────────────────────────────────────────────
+  function attachDragHandlers() {
+    document.querySelectorAll('.pref-item[draggable]').forEach(function (item) {
+      item.addEventListener('dragstart', function (e) {
+        dragSrcId = item.getAttribute('data-id');
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      item.addEventListener('dragend', function () {
+        item.classList.remove('dragging');
+        document.querySelectorAll('.pref-item.drag-over').forEach(function (el) {
+          el.classList.remove('drag-over');
+        });
+      });
+      item.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        document.querySelectorAll('.pref-item.drag-over').forEach(function (el) {
+          el.classList.remove('drag-over');
+        });
+        item.classList.add('drag-over');
+      });
+      item.addEventListener('drop', function (e) {
+        e.preventDefault();
+        item.classList.remove('drag-over');
+        var targetId = item.getAttribute('data-id');
+        if (!dragSrcId || dragSrcId === targetId) return;
+
+        var srcCat = null, tgtCat = null;
+        allPrefs.forEach(function (p) {
+          if (p.id === dragSrcId) srcCat = p.category;
+          if (p.id === targetId) tgtCat = p.category;
+        });
+        if (srcCat !== tgtCat) return;
+
+        var catPrefs = allPrefs.filter(function (p) { return p.category === srcCat; });
+        var srcIdx = catPrefs.findIndex(function (p) { return p.id === dragSrcId; });
+        var tgtIdx = catPrefs.findIndex(function (p) { return p.id === targetId; });
+        var moved = catPrefs.splice(srcIdx, 1)[0];
+        catPrefs.splice(tgtIdx, 0, moved);
+
+        var others = allPrefs.filter(function (p) { return p.category !== srcCat; });
+        allPrefs = others.concat(catPrefs);
+
+        var orderPayload = catPrefs.map(function (p, idx) {
+          p.sort_order = idx;
+          return { id: p.id, sortOrder: idx };
+        });
+
+        renderPrefs(allPrefs);
+
+        fetch('/api/preferences/reorder', {
+          method: 'PUT',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order: orderPayload }),
+        }).then(function (res) {
+          return parseJsonRes(res);
+        }).then(function () {
+          showToast('Order saved');
+        }).catch(function (err) {
+          showToast(err.message || 'Could not save order', 'error');
+        });
+      });
+    });
+  }
+
+  // ── Category rename ─────────────────────────────────────────────────────
+  function startRename(btn) {
+    var cat = btn.getAttribute('data-cat');
+    var header = btn.closest('.pref-group-header');
+
+    header.innerHTML =
+      '<input type="text" class="category-rename-input" value="' + escapeHtml(cat) + '" aria-label="New category name" />' +
+      '<button type="button" class="btn-rename" onclick="confirmRename(this, \'' + escapeHtml(cat) + '\')">OK</button>' +
+      '<button type="button" class="btn-rename" style="border-color:var(--rule)" onclick="cancelRename(this, \'' + escapeHtml(cat) + '\')">Cancel</button>';
+
+    var input = header.querySelector('.category-rename-input');
+    input.focus();
+    input.select();
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        confirmRename(header.querySelector('.btn-rename'), cat);
+      } else if (e.key === 'Escape') {
+        cancelRename(header.querySelector('.btn-rename'), cat);
+      }
+    });
+  }
+
+  function cancelRename(btn, originalCat) {
+    renderPrefs(allPrefs);
+  }
+
+  function confirmRename(btn, oldCategory) {
+    var header = btn.closest('.pref-group-header');
+    var input = header.querySelector('.category-rename-input');
+    var newCategory = (input ? input.value : '').trim();
+    if (!newCategory || newCategory === oldCategory) {
+      renderPrefs(allPrefs);
+      return;
+    }
+
+    fetch('/api/categories/rename', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ oldCategory: oldCategory, newCategory: newCategory }),
+    }).then(function (res) {
+      return parseJsonRes(res);
+    }).then(function () {
+      allPrefs = allPrefs.map(function (p) {
+        if (p.category === oldCategory) return Object.assign({}, p, { category: newCategory });
+        return p;
+      });
+      renderPrefs(allPrefs);
+      showToast('Category renamed');
+    }).catch(function (err) {
+      showToast(err.message || 'Could not rename category', 'error');
+      renderPrefs(allPrefs);
+    });
+  }
+
+  // ── API Key ─────────────────────────────────────────────────────────────
+  function toggleKey(ev) {
+    keyVisible = !keyVisible;
+    document.getElementById('api-key-display').textContent = keyVisible ? apiKeyValue : '••••••••••••••••••••••••••••••••';
+    var btn = ev.currentTarget;
+    btn.textContent = keyVisible ? 'Hide' : 'Show';
+    btn.setAttribute('aria-label', keyVisible ? 'Hide API key' : 'Show API key');
+  }
+
+  function copyKey(ev) {
+    navigator.clipboard.writeText(apiKeyValue);
+    var btn = ev.currentTarget;
+    btn.textContent = 'Copied!';
+    setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+  }
+
+  async function regenerateKey() {
+    if (!confirm('Regenerate your API key? Your existing integrations will stop working until updated.')) return;
+    try {
+      var res = await fetch('/api/key/regenerate', { method: 'POST', credentials: 'same-origin' });
+      var data = await parseJsonRes(res);
+      if (!data) return;
+      apiKeyValue = data.apiKey;
+      document.getElementById('api-key-display').textContent = keyVisible ? apiKeyValue : '••••••••••••••••••••••••••••••••';
+      showToast('API key regenerated');
+    } catch (e) {
+      showToast(e.message || 'Could not regenerate key', 'error');
+    }
+  }
+
+  // ── Modal focus trap ────────────────────────────────────────────────────
+  function getModalFocusables() {
+    var modal = document.getElementById('modal');
+    return modal.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+  }
+
+  function trapModalFocus(e) {
+    if (e.key !== 'Tab') return;
+    var focusables = getModalFocusables();
+    if (!focusables.length) return;
+    var first = focusables[0];
+    var last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+
+  function onModalKeydown(e) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeModal();
+    } else {
+      trapModalFocus(e);
+    }
+  }
+
+  function openAddModal() {
+    editingPrefId = null;
+    document.getElementById('modal-title').textContent = 'Add Preference';
+    document.getElementById('modal-submit-btn').textContent = 'Save';
+    document.getElementById('pref-category').value = '';
+    document.getElementById('pref-rule').value = '';
+    document.getElementById('pref-scope-env').value = '';
+    document.getElementById('pref-scope-project').value = '';
+    document.getElementById('pref-scope-client').value = '';
+
+    var modal = document.getElementById('modal');
+    modalLastFocus = document.activeElement;
+    modal.classList.remove('hidden');
+    document.addEventListener('keydown', onModalKeydown);
+    setTimeout(function () { document.getElementById('pref-category').focus(); }, 0);
+  }
+
+  function openEditModal(btn) {
+    var id = btn.getAttribute('data-pref-id');
+    var item = document.querySelector('.pref-item[data-id="' + id + '"]');
+    if (!item) return;
+    var category = item.getAttribute('data-category') || '';
+    var rule = item.getAttribute('data-rule') || '';
+
+    var scopeEnv = item.getAttribute('data-scope-env') || '';
+    var scopeProject = item.getAttribute('data-scope-project') || '';
+    var scopeClient = item.getAttribute('data-scope-client') || '';
+
+    editingPrefId = id;
+    document.getElementById('modal-title').textContent = 'Edit Preference';
+    document.getElementById('modal-submit-btn').textContent = 'Update';
+    document.getElementById('pref-category').value = category;
+    document.getElementById('pref-rule').value = rule;
+    document.getElementById('pref-scope-env').value = scopeEnv;
+    document.getElementById('pref-scope-project').value = scopeProject;
+    document.getElementById('pref-scope-client').value = scopeClient;
+
+    var modal = document.getElementById('modal');
+    modalLastFocus = document.activeElement;
+    modal.classList.remove('hidden');
+    document.addEventListener('keydown', onModalKeydown);
+    setTimeout(function () { document.getElementById('pref-category').focus(); }, 0);
+  }
+
+  function closeModal() {
+    var modal = document.getElementById('modal');
+    modal.classList.add('hidden');
+    document.removeEventListener('keydown', onModalKeydown);
+    editingPrefId = null;
+    if (modalLastFocus && typeof modalLastFocus.focus === 'function') {
+      modalLastFocus.focus();
+    }
+    modalLastFocus = null;
+  }
+
+  async function submitModal(e) {
+    e.preventDefault();
+    var category = document.getElementById('pref-category').value.trim();
+    var rule = document.getElementById('pref-rule').value.trim();
+    var scopeEnv = document.getElementById('pref-scope-env').value || null;
+    var scopeProject = (document.getElementById('pref-scope-project').value || '').trim() || null;
+    var scopeClient = (document.getElementById('pref-scope-client').value || '').trim() || null;
+    var payload = { category: category, rule: rule, scope_env: scopeEnv, scope_project: scopeProject, scope_client: scopeClient };
+
+    try {
+      if (editingPrefId) {
+        var res = await fetch('/api/preferences/' + encodeURIComponent(editingPrefId), {
+          method: 'PUT',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        await parseJsonRes(res);
+        closeModal();
+        await reloadPrefs();
+        showToast('Preference updated');
+      } else {
+        var res2 = await fetch('/api/preferences', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        await parseJsonRes(res2);
+        closeModal();
+        await reloadPrefs();
+        showToast('Preference saved');
+      }
+      await refreshStats();
+    } catch (err) {
+      showToast(err.message || 'Could not save preference', 'error');
+    }
+  }
+
+  async function reloadPrefs() {
+    var prefsRes = await fetch('/api/preferences', { credentials: 'same-origin' });
+    var prefs = await parseJsonRes(prefsRes);
+    if (!prefs) return;
+    allPrefs = prefs;
+    updateNavBadge(prefs.length);
+
+    var query = (document.getElementById('search-input').value || '').trim();
+    if (query) {
+      filterPrefs();
+    } else {
+      renderPrefs(allPrefs);
+    }
+  }
+
+  // ── Delete ──────────────────────────────────────────────────────────────
+  function deletePreferenceFromButton(btn) {
+    var id = btn.getAttribute('data-pref-id');
+    if (id) deletePreference(id);
+  }
+
+  async function deletePreference(id) {
+    try {
+      var res = await fetch('/api/preferences/' + encodeURIComponent(id), { method: 'DELETE', credentials: 'same-origin' });
+      await parseJsonRes(res);
+      await reloadPrefs();
+      await refreshStats();
+      showToast('Preference deleted');
+    } catch (err) {
+      showToast(err.message || 'Could not delete', 'error');
+    }
+  }
+
+  // ── Logout ──────────────────────────────────────────────────────────────
+  async function logout() {
+    await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    window.location.href = '/login';
+  }
+
+  init();
+  loadWebhooks();
+
+  // ── Version History ─────────────────────────────────────────────────────
+  var historyPrefId = null;
+
+  function openHistory(btn) {
+    var id = btn.getAttribute('data-pref-id');
+    var item = document.querySelector('.pref-item[data-id="' + id + '"]');
+    historyPrefId = id;
+    var ruleText = item ? (item.getAttribute('data-rule') || '') : '';
+    document.getElementById('history-rule-preview').textContent = ruleText.length > 100 ? ruleText.slice(0, 100) + '…' : ruleText;
+    document.getElementById('history-body').innerHTML = '<div class="loading">Loading…</div>';
+    document.getElementById('history-drawer').classList.add('open');
+    document.getElementById('history-overlay').classList.add('open');
+    document.addEventListener('keydown', onHistoryKeydown);
+    fetchHistory(id);
+  }
+
+  function closeHistory() {
+    document.getElementById('history-drawer').classList.remove('open');
+    document.getElementById('history-overlay').classList.remove('open');
+    document.removeEventListener('keydown', onHistoryKeydown);
+    historyPrefId = null;
+  }
+
+  function onHistoryKeydown(e) {
+    if (e.key === 'Escape') closeHistory();
+  }
+
+  async function fetchHistory(prefId) {
+    try {
+      var res = await fetch('/api/preferences/' + encodeURIComponent(prefId) + '/history', { credentials: 'same-origin' });
+      var data = await parseJsonRes(res);
+      if (!data) return;
+      renderHistory(data, prefId);
+    } catch (e) {
+      document.getElementById('history-body').innerHTML = '<div class="empty-state" style="padding:32px 0">Could not load history.</div>';
+    }
+  }
+
+  function renderHistory(revisions, prefId) {
+    var body = document.getElementById('history-body');
+    if (!revisions.length) {
+      body.innerHTML = '<div class="empty-state" style="padding:32px 0;">No history yet. History is recorded whenever a preference is created or updated.</div>';
+      return;
+    }
+
+    // Sort newest first
+    var sorted = revisions.slice().sort(function (a, b) { return b.version - a.version; });
+    var maxVer = sorted[0].version;
+
+    body.innerHTML =
+      '<div class="history-timeline">' +
+      sorted.map(function (rev) {
+        var isCurrent = rev.version === maxVer;
+        var date = new Date(rev.created_at);
+        var dateStr = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
+                      ' ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        return (
+          '<div class="history-rev' + (isCurrent ? ' is-current' : '') + '">' +
+          '<div class="history-rev-meta">' +
+          '<span class="history-rev-ver' + (isCurrent ? ' current-badge' : '') + '">v' + rev.version + (isCurrent ? ' · current' : '') + '</span>' +
+          '<span class="history-rev-cat">' + escapeHtml(rev.category) + '</span>' +
+          '<span class="history-rev-time">' + escapeHtml(dateStr) + '</span>' +
+          '</div>' +
+          '<div class="history-rev-rule">' + escapeHtml(rev.rule) + '</div>' +
+          (!isCurrent
+            ? '<button class="btn-restore" onclick="restoreRevision(\'' + escapeHtml(prefId) + '\', \'' + escapeHtml(String(rev.id)) + '\', ' + rev.version + ')">↩ Restore this version</button>'
+            : '<span style="font-size:11.5px;color:var(--muted)">Current version</span>'
+          ) +
+          '</div>'
+        );
+      }).join('') +
+      '</div>';
+  }
+
+  async function restoreRevision(prefId, revisionId, version) {
+    if (!confirm('Restore to version ' + version + '? This will overwrite the current rule text.')) return;
+    try {
+      var res = await fetch('/api/preferences/' + encodeURIComponent(prefId) + '/restore/' + encodeURIComponent(revisionId), {
+        method: 'POST', credentials: 'same-origin'
+      });
+      await parseJsonRes(res);
+      showToast('Restored to v' + version);
+      closeHistory();
+      await reloadPrefs();
+      await refreshStats();
+    } catch (e) {
+      showToast(e.message || 'Could not restore', 'error');
+    }
+  }
+
+  // ── Webhooks ────────────────────────────────────────────────────────────
+  var webhookModalOpen = false;
+
+  async function loadWebhooks() {
+    var listEl = document.getElementById('webhook-list');
+    try {
+      var res = await fetch('/api/webhooks', { credentials: 'same-origin' });
+      if (res.status === 401) return; // not logged in yet
+      var data = await parseJsonRes(res);
+      if (!data) return;
+      renderWebhooks(data);
+    } catch (e) {
+      listEl.innerHTML = '<div class="webhooks-empty">Could not load webhooks.</div>';
+    }
+  }
+
+  function renderWebhooks(hooks) {
+    var listEl = document.getElementById('webhook-list');
+    if (!hooks.length) {
+      listEl.innerHTML = '<div class="webhooks-empty">No endpoints yet. Add one to receive real-time events when preferences change.</div>';
+      return;
+    }
+    listEl.innerHTML = hooks.map(function (h) {
+      var events = [];
+      try { events = typeof h.events === 'string' ? JSON.parse(h.events) : (h.events || []); } catch (_) {}
+      var badgesHtml = events.map(function (ev) {
+        return '<span class="webhook-event-badge">' + escapeHtml(ev) + '</span>';
+      }).join('');
+      return (
+        '<div class="webhook-row" data-hook-id="' + escapeHtml(h.id) + '">' +
+        '<span class="webhook-enabled-dot' + (h.enabled ? '' : ' disabled') + '" title="' + (h.enabled ? 'Active' : 'Disabled') + '"></span>' +
+        '<span class="webhook-url">' + escapeHtml(h.url) + '</span>' +
+        '<div class="webhook-events">' + badgesHtml + '</div>' +
+        '<div class="webhook-row-actions">' +
+        '<button class="btn-wh-test" onclick="testWebhook(\'' + escapeHtml(h.id) + '\')" title="Send test event">Test</button>' +
+        '<button class="btn-wh-del" onclick="deleteWebhook(\'' + escapeHtml(h.id) + '\')" title="Delete endpoint">Delete</button>' +
+        '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  function openWebhookModal() {
+    document.getElementById('wh-url').value = '';
+    document.querySelectorAll('input[name="wh-events"]').forEach(function (cb) {
+      cb.checked = (cb.value === 'preference.created' || cb.value === 'preference.updated');
+    });
+    document.getElementById('wh-secret-reveal').classList.add('hidden');
+    document.getElementById('wh-submit-btn').textContent = 'Add endpoint';
+    document.getElementById('webhook-modal').classList.remove('hidden');
+    webhookModalOpen = true;
+    setTimeout(function () { document.getElementById('wh-url').focus(); }, 0);
+  }
+
+  function closeWebhookModal() {
+    document.getElementById('webhook-modal').classList.add('hidden');
+    webhookModalOpen = false;
+  }
+
+  async function submitWebhookModal(e) {
+    e.preventDefault();
+    var url = document.getElementById('wh-url').value.trim();
+    var events = [];
+    document.querySelectorAll('input[name="wh-events"]:checked').forEach(function (cb) {
+      events.push(cb.value);
+    });
+    if (!events.length) { showToast('Select at least one event', 'error'); return; }
+
+    var btn = document.getElementById('wh-submit-btn');
+    btn.disabled = true; btn.textContent = 'Adding…';
+
+    try {
+      var res = await fetch('/api/webhooks', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url, events: events }),
+      });
+      var data = await parseJsonRes(res);
+      if (!data) return;
+
+      // Show secret once
+      if (data.secret) {
+        document.getElementById('wh-secret-code').textContent = data.secret;
+        document.getElementById('wh-secret-reveal').classList.remove('hidden');
+        btn.textContent = 'Done — copy secret above';
+        btn.disabled = true;
+      } else {
+        closeWebhookModal();
+      }
+
+      await loadWebhooks();
+      showToast('Webhook endpoint added');
+    } catch (err) {
+      showToast(err.message || 'Could not add webhook', 'error');
+      btn.disabled = false; btn.textContent = 'Add endpoint';
+    }
+  }
+
+  async function testWebhook(id) {
+    try {
+      var res = await fetch('/api/webhooks/' + encodeURIComponent(id) + '/test', {
+        method: 'POST', credentials: 'same-origin'
+      });
+      await parseJsonRes(res);
+      showToast('Test event sent');
+    } catch (e) {
+      showToast(e.message || 'Test delivery failed', 'error');
+    }
+  }
+
+  async function deleteWebhook(id) {
+    if (!confirm('Delete this webhook endpoint? Deliveries will stop immediately.')) return;
+    try {
+      var res = await fetch('/api/webhooks/' + encodeURIComponent(id), { method: 'DELETE', credentials: 'same-origin' });
+      await parseJsonRes(res);
+      await loadWebhooks();
+      showToast('Webhook deleted');
+    } catch (e) {
+      showToast(e.message || 'Could not delete webhook', 'error');
+    }
+  }
+</script>
+</body>
+</html>

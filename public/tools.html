@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instill AI — MCP Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/signal.css" />
+  <style>
+    .page-hero { padding: 80px 0 64px; border-bottom: 1px solid var(--rule); }
+    .page-hero h1 { font-size: clamp(40px, 6vw, 72px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.0; margin-top: 20px; max-width: 20ch; }
+    .page-hero p { font-size: 17px; color: var(--ink-2); max-width: 58ch; margin-top: 20px; line-height: 1.6; }
+
+    .intro-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 48px 0; border: 1px solid var(--rule); }
+    .intro-cell { padding: 24px 28px; border-right: 1px solid var(--rule); }
+    .intro-cell:last-child { border-right: none; }
+    .intro-cell strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .intro-cell p { font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
+    .intro-cell code { font-family: var(--font-mono); font-size: 12px; background: var(--paper-2); padding: 1px 5px; border-radius: 3px; }
+    .intro-cell .intro-eyebrow { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px; }
+
+    .group-header { padding: 40px 0 16px; border-bottom: 2px solid var(--ink); margin-bottom: 0; display: flex; align-items: baseline; gap: 24px; }
+    .group-header h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; }
+    .group-header p { font-size: 14px; color: var(--ink-2); }
+
+    .tools-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 1px solid var(--rule); border-top: none; margin-bottom: 0; }
+    .tool-card { padding: 28px; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); }
+    .tool-card:nth-child(even) { border-right: none; }
+    .tool-card.tool-featured { grid-column: 1 / -1; background: var(--paper-2); border-right: none; }
+    .tool-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .tool-name { font-family: var(--font-mono); font-size: 13.5px; font-weight: 600; color: var(--signal-ink); background: var(--signal-soft); padding: 4px 10px; border-radius: 4px; border: 1px solid oklch(0.78 0.15 118 / 0.3); }
+    .tool-badge { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--rule-strong); color: var(--ink-3); }
+    .tool-badge-behaviour { border-color: oklch(0.78 0.12 60 / 0.4); color: oklch(0.58 0.12 60); background: oklch(0.26 0.05 60); }
+    .tool-badge-featured { background: var(--signal); color: #14130f; border-color: transparent; font-weight: 600; }
+    .tool-desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.55; margin-bottom: 16px; }
+    .tool-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 13px; }
+    .tool-meta-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
+    .tool-param-none { color: var(--muted); font-size: 13px; }
+    .tool-param-list { display: flex; flex-direction: column; gap: 4px; }
+    .tool-param { font-size: 13px; color: var(--ink-2); }
+    .tool-param code { font-family: var(--font-mono); font-size: 12px; background: var(--paper-2); padding: 1px 5px; border-radius: 3px; }
+    .tool-param-type { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+    .tool-example { margin-top: 16px; }
+    .tool-example-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); display: block; margin-bottom: 8px; }
+    .tool-example pre { background: #13110e; color: oklch(0.88 0.02 100); border-radius: var(--radius); padding: 12px 16px; font-size: 12px; line-height: 1.65; overflow-x: auto; border: 1px solid oklch(0.25 0.01 90); }
+    .tool-example pre code { font-family: var(--font-mono); background: transparent; padding: 0; font-size: inherit; }
+    .tool-when { margin-top: 12px; display: flex; gap: 10px; font-size: 13px; color: var(--ink-2); align-items: baseline; }
+    .tool-when-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); flex-shrink: 0; }
+
+    .ref-section { padding: 64px 0 80px; }
+    .ref-table-wrap { overflow-x: auto; margin-top: 32px; }
+    .ref-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ref-table th { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); padding: 12px 16px; border-bottom: 2px solid var(--rule-strong); text-align: left; }
+    .ref-table td { padding: 13px 16px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+    .ref-table tr:hover td { background: var(--paper-2); }
+    .ref-table code { font-family: var(--font-mono); font-size: 12px; background: var(--signal-soft); padding: 2px 6px; border-radius: 3px; color: var(--signal-ink); }
+    .ref-table .group-cell { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+    .ref-table .params-cell { font-size: 12px; color: var(--ink-3); font-family: var(--font-mono); }
+
+    @media (max-width: 880px) {
+      .intro-row { grid-template-columns: 1fr; }
+      .intro-cell { border-right: none; border-bottom: 1px solid var(--rule); }
+      .intro-cell:last-child { border-bottom: none; }
+      .tools-grid { grid-template-columns: 1fr; }
+      .tool-card { border-right: none; }
+      .tool-card.tool-featured { grid-column: 1; }
+      .tool-meta { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:300;padding:10px 18px;background:var(--ink);color:var(--paper);font-weight:600;font-size:14px;text-decoration:none;border-radius:0 0 8px 8px;">Skip to content</a>
+<div class="shell">
+
+  <header class="topbar">
+    <a href="/home" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-meta">Instill AI <span class="v">v2.0</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/home">Overview</a>
+      <a href="/integrations">Integrations</a>
+      <a href="/tools" class="active">Tools</a>
+      <a href="/roadmap">Roadmap</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/dashboard" id="nav-dashboard-link" class="hidden">Dashboard</a>
+      <a href="/setup" id="nav-setup-link" class="hidden">Setup</a>
+      <a href="/admin" id="admin-link" class="hidden">Admin</a>
+    </nav>
+    <div class="top-actions" id="topbar-actions">
+      <button type="button" class="btn-theme" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button>
+      <a href="/login" id="signin-link" class="btn btn-ghost btn-sm">Sign in</a>
+      <a href="/login#register" id="register-link" class="btn btn-primary btn-sm">Get started <span class="arrow">→</span></a>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <section class="page-hero wrap">
+      <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">MCP Tools</span></div>
+      <h1>Every tool exposed by Instill AI.</h1>
+      <p>What each tool does, when to use it, and what it returns. Your connected AI client calls these tools via the MCP endpoint — no extra API costs.</p>
+    </section>
+
+    <div class="wrap">
+
+      <div class="intro-row">
+        <div class="intro-cell">
+          <div class="intro-eyebrow">Protocol</div>
+          <strong>How tools work</strong>
+          <p>Your connected AI client calls these tools via the MCP endpoint. Each call returns text the model reads and acts on — no external services.</p>
+        </div>
+        <div class="intro-cell">
+          <div class="intro-eyebrow">Auth</div>
+          <strong>Authentication</strong>
+          <p>Every call is authenticated by your API key. Tools only read and write your own preferences — no other user's data is accessible.</p>
+        </div>
+        <div class="intro-cell">
+          <div class="intro-eyebrow">Session</div>
+          <strong>Session start</strong>
+          <p>Add <code>get_preferences</code> to your CLAUDE.md or Cursor rules so your preferences load automatically at the start of every session.</p>
+        </div>
+      </div>
+
+      <!-- Group: Session -->
+      <div class="group-header">
+        <h2>Session</h2>
+        <p>Tools that manage session state. Call these at the start of a session or when you need to reset.</p>
+      </div>
+      <div class="tools-grid">
+
+        <div class="tool-card tool-featured">
+          <div class="tool-card-top">
+            <code class="tool-name">get_preferences</code>
+            <span class="tool-badge tool-badge-featured">Call at session start</span>
+          </div>
+          <p class="tool-desc">Loads all your saved preferences and returns them grouped by category. This is the core tool — it injects your rules into the model's context so they apply for the entire session.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <span class="tool-param-none">None</span>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>All preferences grouped by category, formatted as plain text</span>
+            </div>
+          </div>
+          <div class="tool-example">
+            <span class="tool-example-label">Example output</span>
+            <pre><code>**behaviour**
+• Be concise. Don't ramble.
+• Check before committing.
+
+**workflow**
+• Plan before executing on difficult tasks.</code></pre>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <code class="tool-name">reset_model</code>
+            <span class="tool-badge tool-badge-behaviour">Behaviour</span>
+          </div>
+          <p class="tool-desc">Clears accumulated session drift and reloads your preferences from scratch. Use this after long sessions where the model has started making shortcuts or ignoring instructions.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <span class="tool-param-none">None</span>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>A reset instruction + your full preferences reloaded</span>
+            </div>
+          </div>
+          <div class="tool-when">
+            <span class="tool-when-label">When to use</span>
+            <span>Say "reset", "start fresh", or "you seem off" — your preference rule will trigger this automatically</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-card-top">
+            <code class="tool-name">gather_context</code>
+            <span class="tool-badge tool-badge-behaviour">Behaviour</span>
+          </div>
+          <p class="tool-desc">Instructs the model to review the entire conversation and consolidate: current goal, decisions made, progress so far, and what's still open. Uses only what's already in the conversation.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <span class="tool-param-none">None</span>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>A structured instruction for the model to build its own context summary</span>
+            </div>
+          </div>
+          <div class="tool-when">
+            <span class="tool-when-label">When to use</span>
+            <span>Automatically at the start of any complex multi-step task</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Group: Reading -->
+      <div class="group-header" style="margin-top:48px;">
+        <h2>Reading</h2>
+        <p>Retrieve and search your preferences without modifying them.</p>
+      </div>
+      <div class="tools-grid">
+
+        <div class="tool-card">
+          <div class="tool-card-top"><code class="tool-name">get_preferences_by_category</code></div>
+          <p class="tool-desc">Returns only the preferences in one specific category. Useful when you want to apply a focused subset of rules without loading everything.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <div class="tool-param-list"><div class="tool-param"><code>category</code> <span class="tool-param-type">string</span> — the category name (case-insensitive)</div></div>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>All rules in that category as a bulleted list</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-card-top"><code class="tool-name">list_categories</code></div>
+          <p class="tool-desc">Lists every category with its rule count. Useful for getting an overview of how your preferences are organised before deciding which to load or modify.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <span class="tool-param-none">None</span>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>Category names with counts, e.g. <code>• behaviour (3 rules)</code></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-card-top"><code class="tool-name">list_preferences_with_ids</code></div>
+          <p class="tool-desc">Returns all preferences with their unique IDs included. Use this before updating or deleting a preference — you need the ID to target a specific rule.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <span class="tool-param-none">None</span>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>Each preference as <code>[id] (category) rule text</code></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-card-top"><code class="tool-name">search_preferences</code></div>
+          <p class="tool-desc">Searches across all rule text and category names for a keyword. Returns matching preferences with their IDs — useful for finding and then updating or deleting a specific rule.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <div class="tool-param-list"><div class="tool-param"><code>query</code> <span class="tool-param-type">string</span> — keyword to search (case-insensitive)</div></div>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>Matching preferences with IDs and categories</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Group: Writing -->
+      <div class="group-header" style="margin-top:48px;">
+        <h2>Writing</h2>
+        <p>Add, edit, and remove preferences. Changes take effect on the next <code style="font-size:13px;">get_preferences</code> call.</p>
+      </div>
+      <div class="tools-grid">
+
+        <div class="tool-card">
+          <div class="tool-card-top"><code class="tool-name">save_preference</code></div>
+          <p class="tool-desc">Adds a new rule to your preferences. If the category doesn't exist it's created automatically. Changes are immediately visible in the dashboard.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <div class="tool-param-list">
+                <div class="tool-param"><code>category</code> <span class="tool-param-type">string</span> — e.g. <code>behaviour</code></div>
+                <div class="tool-param"><code>rule</code> <span class="tool-param-type">string</span> — the instruction to save</div>
+              </div>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>Confirmation with the saved category and rule</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-card-top"><code class="tool-name">update_preference</code></div>
+          <p class="tool-desc">Edits an existing preference by its ID. You can update the rule text, the category, or both. Use <code>list_preferences_with_ids</code> first to find the ID.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <div class="tool-param-list">
+                <div class="tool-param"><code>id</code> <span class="tool-param-type">string</span></div>
+                <div class="tool-param"><code>rule</code> <span class="tool-param-type">string</span></div>
+                <div class="tool-param"><code>category</code> <span class="tool-param-type">string, optional</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>Confirmation with the updated category and rule</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-card-top"><code class="tool-name">rename_category</code></div>
+          <p class="tool-desc">Renames a category and moves all its rules to the new name in one operation. Useful for reorganising without having to edit every preference individually.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <div class="tool-param-list">
+                <div class="tool-param"><code>old_category</code> <span class="tool-param-type">string</span></div>
+                <div class="tool-param"><code>new_category</code> <span class="tool-param-type">string</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>Confirmation with how many rules were moved</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-card-top"><code class="tool-name">delete_preference</code></div>
+          <p class="tool-desc">Permanently removes a single preference by its ID. Use <code>list_preferences_with_ids</code> or <code>search_preferences</code> first to confirm the right ID before deleting.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <div class="tool-param-list"><div class="tool-param"><code>id</code> <span class="tool-param-type">string</span></div></div>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>Confirmation of deletion, or an error if the ID wasn't found</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-card-top"><code class="tool-name">clear_category</code></div>
+          <p class="tool-desc">Deletes every preference in a category at once. Useful for removing an entire group of rules you no longer need. This cannot be undone — use with care.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <div class="tool-param-list"><div class="tool-param"><code>category</code> <span class="tool-param-type">string</span></div></div>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>Confirmation with how many rules were deleted</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Group: Behaviour -->
+      <div class="group-header" style="margin-top:48px;">
+        <h2>Behaviour</h2>
+        <p>Tools that inject instructions into the model's context — no database reads or writes.</p>
+      </div>
+      <div class="tools-grid">
+
+        <div class="tool-card tool-featured">
+          <div class="tool-card-top">
+            <code class="tool-name">double_check_facts</code>
+            <span class="tool-badge tool-badge-behaviour">Behaviour</span>
+          </div>
+          <p class="tool-desc">Activates a stricter fact-checking mode for the model's next response. For general claims: the model must flag uncertainty rather than stating things with false confidence. For <strong>finance, medical, and legal</strong> topics: mandatory verification flags and a recommendation to consult a professional are added regardless of how confident the model feels.</p>
+          <div class="tool-meta">
+            <div>
+              <div class="tool-meta-label">Parameters</div>
+              <span class="tool-param-none">None</span>
+            </div>
+            <div>
+              <div class="tool-meta-label">Returns</div>
+              <span>A fact-checking instruction the model applies before responding</span>
+            </div>
+          </div>
+          <div class="tool-when">
+            <span class="tool-when-label">When to use</span>
+            <span>Automatically triggered for any finance, medical, or legal question via your preference rule</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick reference -->
+      <section class="ref-section">
+        <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">Quick reference</span></div>
+        <h2 style="max-width:16ch;">All 13 tools at a glance.</h2>
+        <div class="ref-table-wrap">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th>Tool</th>
+                <th>Group</th>
+                <th>Parameters</th>
+                <th>One-line summary</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>get_preferences</code></td><td class="group-cell">Session</td><td class="params-cell">—</td><td>Load all preferences at session start</td></tr>
+              <tr><td><code>reset_model</code></td><td class="group-cell">Session</td><td class="params-cell">—</td><td>Clear drift, reload preferences, fresh-session state</td></tr>
+              <tr><td><code>gather_context</code></td><td class="group-cell">Session</td><td class="params-cell">—</td><td>Consolidate conversation context, no extra calls</td></tr>
+              <tr><td><code>get_preferences_by_category</code></td><td class="group-cell">Reading</td><td class="params-cell">category</td><td>Rules for one category only</td></tr>
+              <tr><td><code>list_categories</code></td><td class="group-cell">Reading</td><td class="params-cell">—</td><td>All categories with rule counts</td></tr>
+              <tr><td><code>list_preferences_with_ids</code></td><td class="group-cell">Reading</td><td class="params-cell">—</td><td>All rules with IDs (needed before edit/delete)</td></tr>
+              <tr><td><code>search_preferences</code></td><td class="group-cell">Reading</td><td class="params-cell">query</td><td>Keyword search across rules and categories</td></tr>
+              <tr><td><code>save_preference</code></td><td class="group-cell">Writing</td><td class="params-cell">category, rule</td><td>Add a new rule</td></tr>
+              <tr><td><code>update_preference</code></td><td class="group-cell">Writing</td><td class="params-cell">id, rule, category?</td><td>Edit an existing rule by ID</td></tr>
+              <tr><td><code>rename_category</code></td><td class="group-cell">Writing</td><td class="params-cell">old_category, new_category</td><td>Rename a category, moves all its rules</td></tr>
+              <tr><td><code>delete_preference</code></td><td class="group-cell">Writing</td><td class="params-cell">id</td><td>Remove a single rule by ID</td></tr>
+              <tr><td><code>clear_category</code></td><td class="group-cell">Writing</td><td class="params-cell">category</td><td>Delete all rules in a category</td></tr>
+              <tr><td><code>double_check_facts</code></td><td class="group-cell">Behaviour</td><td class="params-cell">—</td><td>Stricter fact-checking, mandatory flags for finance/medical/law</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="brand" style="margin-bottom:16px;"><span class="brand-mark"></span><span>Instill AI</span></div>
+        <p style="font-size:13px;color:var(--ink-3);max-width:28ch;">Self-hosted preference server for the Model Context Protocol. Your rules. Every session.</p>
+      </div>
+      <div class="footer-col"><h5>Product</h5><a href="/home">Overview</a><a href="/integrations">Integrations</a><a href="/tools">Tools</a><a href="/roadmap">Roadmap</a><a href="/pricing">Pricing</a></div>
+      <div class="footer-col"><h5>Account</h5><a href="/login">Sign in</a><a href="/login#register">Register</a><a href="/dashboard">Dashboard</a><a href="/setup">Setup Guide</a></div>
+      <div class="footer-col"><h5>Legal</h5><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Instill AI · Self-hosted, your data, your rules</span><span>v2.0 · build 2026.05</span></div>
+  </footer>
+</div>
+<script src="/scroll-animations.js" defer></script>
+<script src="/theme.js"></script>
+<script>
+  async function init() {
+    const meRes = await fetch('/api/me', { credentials: 'same-origin' });
+    if (meRes.status === 401) return; // logged out — keep public nav as-is
+    const me = await meRes.json().catch(() => ({}));
+    if (!me || !me.id) return;
+
+    // Show auth nav links
+    document.getElementById('nav-dashboard-link').classList.remove('hidden');
+    document.getElementById('nav-setup-link').classList.remove('hidden');
+    if (me.isAdmin) document.getElementById('admin-link').classList.remove('hidden');
+
+    // Swap top-actions to logged-in state
+    const actions = document.getElementById('topbar-actions');
+    const themeBtn = document.getElementById('theme-toggle');
+    actions.innerHTML = '';
+    if (themeBtn) actions.appendChild(themeBtn);
+    const status = document.createElement('span');
+    status.className = 'status';
+    status.innerHTML = '<span class="dot"></span>Connected';
+    actions.appendChild(status);
+    const out = document.createElement('button');
+    out.type = 'button';
+    out.className = 'btn btn-ghost btn-sm';
+    out.textContent = 'Sign out';
+    out.addEventListener('click', logout);
+    actions.appendChild(out);
+  }
+  async function logout() {
+    await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    window.location.href = '/login';
+  }
+  init();
+</script>
+</body>
+</html>

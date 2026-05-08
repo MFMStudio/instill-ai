@@ -1,0 +1,34 @@
+{
+  "id": "instill:security-v1",
+  "name": "Security Baseline",
+  "description": "Essential security rules for AI assistants working with code and infrastructure. Prevents accidental exposure of secrets, enforces safe defaults, and prompts verification before destructive actions.",
+  "version": "1.0.0",
+  "tags": ["security", "safety", "secrets", "infrastructure"],
+  "author": "Instill AI",
+  "preferences": [
+    {
+      "category": "security",
+      "rule": "Never include secrets, API keys, tokens, or passwords in code, logs, or responses. If you see one, redact it and flag it immediately."
+    },
+    {
+      "category": "security",
+      "rule": "Before executing any destructive operation (DROP, DELETE, rm -rf, reset --hard), state what will be destroyed and wait for explicit confirmation."
+    },
+    {
+      "category": "security",
+      "rule": "Do not commit .env files, credentials, or private keys. Check .gitignore is in place before any git operation."
+    },
+    {
+      "category": "security",
+      "rule": "When generating auth code, use established libraries (bcrypt, argon2, passport) — never roll custom crypto."
+    },
+    {
+      "category": "security",
+      "rule": "Sanitise all user inputs before use in SQL queries, shell commands, or HTML output. Prefer parameterised queries."
+    },
+    {
+      "category": "security",
+      "rule": "Flag any dependency with a known CVE before using or upgrading it. Run npm audit / pip audit as part of setup steps."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#67e8f9" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+  <!-- Dot (Diamond) -->
+  <rect x="104" y="24" width="48" height="48" rx="12" transform="rotate(45 128 48)" fill="#cffafe" />
+  <!-- Stem (Crystal Shard) -->
+  <path d="M 128 104 L 184 160 L 128 240 L 72 160 Z" fill="url(#cyanGrad)" />
+  <!-- Inner highlight for 3D effect -->
+  <path d="M 128 104 L 184 160 L 128 240 Z" fill="#ffffff" opacity="0.25" />
+</svg>

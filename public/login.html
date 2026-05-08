@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sign in or create an account for your Instill AI deployment." />
+  <title>Instill AI — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/signal.css" />
+  <style>
+    .hidden { display: none !important; }
+
+    .auth-wrap {
+      min-height: calc(100vh - 60px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 80px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--paper);
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 12px 40px rgba(0,0,0,0.09);
+      padding: 40px;
+    }
+
+    .auth-brand {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .auth-heading {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .auth-tagline {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--paper-2);
+      border-radius: 10px;
+      padding: 3px;
+      margin-bottom: 24px;
+    }
+
+    .auth-tab {
+      padding: 8px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .auth-tab.active {
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+    }
+
+    .auth-form { display: flex; flex-direction: column; gap: 14px; }
+
+    .auth-form label {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--ink-2);
+      margin-bottom: -8px;
+    }
+
+    .auth-form input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--rule-strong);
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      font-family: var(--font-sans);
+      color: var(--ink);
+      background: var(--paper);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      box-sizing: border-box;
+    }
+
+    .auth-form input:focus {
+      border-color: var(--signal-ink);
+      box-shadow: 0 0 0 3px oklch(0.78 0.19 118 / 0.15);
+    }
+
+    .auth-form input::placeholder { color: var(--muted); }
+
+    .auth-submit {
+      width: 100%;
+      padding: 11px;
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      margin-top: 4px;
+      transition: opacity 0.15s;
+    }
+
+    .auth-submit:hover { opacity: 0.85; }
+
+    .error-msg {
+      font-size: 13px;
+      color: oklch(0.50 0.18 25);
+      background: oklch(0.96 0.03 25);
+      border: 1px solid oklch(0.88 0.08 25);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      margin-top: 4px;
+    }
+
+    .auth-footer {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 28px 0;
+      flex-wrap: wrap;
+    }
+
+    .auth-footer a {
+      font-size: 12.5px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .auth-footer a:hover { color: var(--ink); }
+  </style>
+</head>
+<body>
+<div class="shell" style="min-height:100vh;display:flex;flex-direction:column;">
+
+  <header class="topbar">
+    <a href="/home" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-meta">Instill AI <span class="v">v2.0</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/home">Overview</a>
+      <a href="/integrations">Integrations</a>
+      <a href="/tools">Tools</a>
+      <a href="/roadmap">Roadmap</a>
+      <a href="/pricing">Pricing</a>
+    </nav>
+    <div class="top-actions">
+      <button type="button" class="btn-theme" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button>
+      <a href="/login" class="btn btn-ghost btn-sm active">Sign in</a>
+      <a href="/login#register" class="btn btn-signal btn-sm">Get started</a>
+    </div>
+  </header>
+
+  <div class="auth-wrap">
+    <div class="auth-card">
+
+      <div class="auth-brand">
+        <a href="/home" class="brand" style="text-decoration:none;">
+          <span class="brand-mark"></span>
+          <span class="brand-meta" style="font-size:15px;">Instill AI</span>
+        </a>
+      </div>
+
+      <h1 class="auth-heading" id="auth-heading">Sign in</h1>
+      <p class="auth-tagline">Your rules. Every session.</p>
+
+      <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+        <button type="button" class="auth-tab active" id="tab-login" role="tab" aria-selected="true" aria-controls="form-login" onclick="showTab('login')">Login</button>
+        <button type="button" class="auth-tab" id="tab-register" role="tab" aria-selected="false" aria-controls="form-register" onclick="showTab('register')">Register</button>
+      </div>
+
+      <form id="form-login" class="auth-form" role="tabpanel" aria-labelledby="tab-login" aria-hidden="false" onsubmit="submitForm(event, 'login')">
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" name="password" autocomplete="current-password" placeholder="••••••••" required />
+        <button type="submit" class="auth-submit">Sign in</button>
+      </form>
+
+      <form id="form-register" class="auth-form hidden" role="tabpanel" aria-labelledby="tab-register" aria-hidden="true" onsubmit="submitForm(event, 'register')">
+        <label for="register-email">Email</label>
+        <input id="register-email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+        <label for="register-password">Password</label>
+        <input id="register-password" type="password" name="password" autocomplete="new-password" placeholder="At least 8 characters" required minlength="8" />
+        <button type="submit" class="auth-submit">Create account</button>
+      </form>
+
+      <p id="error-msg" class="error-msg hidden" role="alert" aria-live="polite" aria-atomic="true"></p>
+
+    </div>
+  </div>
+
+  <nav class="auth-footer" aria-label="Site">
+    <a href="/home">Home</a>
+    <a href="/integrations">Integrations</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+  </nav>
+
+</div>
+
+<script src="/theme.js"></script>
+<script>
+  function showTab(tab) {
+    var fl = document.getElementById('form-login');
+    var fr = document.getElementById('form-register');
+    fl.classList.toggle('hidden', tab !== 'login');
+    fr.classList.toggle('hidden', tab !== 'register');
+    fl.setAttribute('aria-hidden', tab !== 'login');
+    fr.setAttribute('aria-hidden', tab !== 'register');
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    document.getElementById('tab-login').setAttribute('aria-selected', tab === 'login');
+    document.getElementById('tab-register').setAttribute('aria-selected', tab === 'register');
+    document.getElementById('error-msg').classList.add('hidden');
+    document.getElementById('auth-heading').textContent = tab === 'login' ? 'Sign in' : 'Create an account';
+    try { history.replaceState(null, '', tab === 'register' ? '/login#register' : '/login'); } catch (e) {}
+  }
+
+  if (location.hash === '#register') showTab('register');
+
+  async function submitForm(e, type) {
+    e.preventDefault();
+    const errEl = document.getElementById('error-msg');
+    errEl.classList.add('hidden');
+    const form = e.target;
+    const body = Object.fromEntries(new FormData(form));
+    const endpoint = type === 'login' ? '/auth/login' : '/auth/register';
+    let res;
+    try {
+      res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    } catch (networkErr) {
+      errEl.textContent = 'Network error. Check your connection and try again.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    let data;
+    try { data = await res.json(); } catch (parseErr) {
+      errEl.textContent = 'Unexpected response from server. Try again.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    if (data.error) {
+      errEl.textContent = data.error;
+      errEl.classList.remove('hidden');
+    } else if (data.redirect) {
+      window.location.href = data.redirect;
+    } else {
+      errEl.textContent = 'Something went wrong. Try again.';
+      errEl.classList.remove('hidden');
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+name: Lint Preferences
+
+# Runs automatically on push/PR if any bundle or preference-related file changes.
+# Also available as a manual trigger (workflow_dispatch).
+#
+# The action checks out the repo, builds the TypeScript, then runs the
+# preference linter against the database. Exit code 1 = lint errors found.
+
+on:
+  push:
+    paths:
+      - 'bundles/**'
+      - 'src/linter.ts'
+      - 'src/cli-lint.ts'
+  pull_request:
+    paths:
+      - 'bundles/**'
+      - 'src/linter.ts'
+  workflow_dispatch:
+    inputs:
+      db_path:
+        description: 'Path to platform.db relative to repo root'
+        required: false
+        default: 'data/platform.db'
+
+jobs:
+  lint:
+    name: Preference lint check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Restore database from secret
+        # Optional: if you store a base64-encoded snapshot of platform.db in
+        # GitHub Actions secrets, decode it here. Otherwise the linter will
+        # report "No preferences found" and exit 0.
+        if: ${{ secrets.INSTILL_DB_B64 != '' }}
+        run: |
+          mkdir -p data
+          echo "${{ secrets.INSTILL_DB_B64 }}" | base64 -d > data/platform.db
+        env:
+          INSTILL_DB_B64: ${{ secrets.INSTILL_DB_B64 }}
+
+      - name: Lint preferences
+        run: npm run lint:preferences
+        env:
+          # Set NODE_ENV so the DB path resolves correctly
+          NODE_ENV: production
+
+      - name: Upload lint report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: data/
+          retention-days: 7

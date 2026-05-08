@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Connect Instill AI to Claude, Cursor, VS Code, Windsurf, Continue, Zed, ChatGPT, and any MCP client." />
+  <title>Instill AI — Integrations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/signal.css" />
+  <style>
+    .page-hero { padding: 80px 0 64px; border-bottom: 1px solid var(--rule); }
+    .page-hero h1 { font-size: clamp(40px, 6vw, 72px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.0; margin-top: 20px; max-width: 20ch; }
+    .page-hero p { font-size: 17px; color: var(--ink-2); max-width: 58ch; margin-top: 20px; line-height: 1.6; }
+
+    .matrix-section { padding: 80px 0; }
+    .matrix-intro { margin-bottom: 40px; }
+    .matrix-intro p { font-size: 15px; color: var(--ink-2); max-width: 60ch; line-height: 1.6; }
+
+    .matrix-table-wrap { overflow-x: auto; }
+    .matrix-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    .matrix-table th { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); padding: 12px 16px; border-bottom: 2px solid var(--ink); text-align: left; white-space: nowrap; }
+    .matrix-table td { padding: 16px 16px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+    .matrix-table tr:hover td { background: var(--paper-2); }
+    .matrix-table .client-name { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+    .matrix-table .client-sub { font-size: 12px; color: var(--muted); font-family: var(--font-mono); margin-top: 2px; }
+    .matrix-table .check { color: var(--signal-ink); font-family: var(--font-mono); font-size: 12px; font-weight: 600; }
+    .matrix-table .dash { color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+    .matrix-table .method-tag { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 10.5px; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--rule-strong); color: var(--ink-3); letter-spacing: 0.03em; }
+
+    .detail-section { padding: 80px 0; background: var(--paper-2); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--rule); background: var(--paper); margin-top: 48px; }
+    .detail-card { padding: 32px 28px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .detail-card:nth-child(3n) { border-right: none; }
+    .detail-card:nth-last-child(-n+3):nth-child(3n+1),
+    .detail-card:nth-last-child(-n+3):nth-child(3n+2),
+    .detail-card:nth-last-child(-n+3):nth-child(3n) { border-bottom: none; }
+    .detail-card .dc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .detail-card .dc-glyph { width: 32px; height: 32px; border: 1px solid var(--rule-strong); border-radius: 6px; display: grid; place-items: center; font-size: 14px; flex-shrink: 0; background: var(--paper); }
+    .detail-card h3 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+    .detail-card p { font-size: 13.5px; color: var(--ink-2); line-height: 1.55; margin-bottom: 8px; }
+    .detail-card .dc-foot { margin-top: 16px; }
+    .detail-card .dc-foot a { font-family: var(--font-mono); font-size: 11px; color: var(--signal-ink); letter-spacing: 0.04em; text-decoration: none; }
+    .detail-card .dc-foot a:hover { text-decoration: underline; }
+    .detail-card.id-generic { background: var(--paper-2); }
+    .detail-card.id-generic .dc-glyph { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+    .cta-strip { padding: 80px 0; }
+    .cta-strip-inner { border: 1px solid var(--rule); border-radius: var(--radius-lg); padding: 48px; display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center; }
+    .cta-strip-inner h2 { font-size: clamp(24px, 3vw, 36px); font-weight: 500; letter-spacing: -0.02em; }
+    .cta-strip-inner p { color: var(--ink-2); margin-top: 8px; font-size: 14.5px; }
+    .cta-strip-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+    @media (max-width: 880px) {
+      .detail-grid { grid-template-columns: 1fr; }
+      .detail-card { border-right: none; border-bottom: 1px solid var(--rule); }
+      .detail-card:last-child { border-bottom: none; }
+      .cta-strip-inner { grid-template-columns: 1fr; }
+      .cta-strip-actions { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:300;padding:10px 18px;background:var(--ink);color:var(--paper);font-weight:600;font-size:14px;text-decoration:none;border-radius:0 0 8px 8px;">Skip to content</a>
+<div class="shell">
+
+  <header class="topbar">
+    <a href="/home" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-meta">Instill AI <span class="v">v2.0</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/home">Overview</a>
+      <a href="/integrations" class="active">Integrations</a>
+      <a href="/tools">Tools</a>
+      <a href="/roadmap">Roadmap</a>
+      <a href="/pricing">Pricing</a>
+    </nav>
+    <div class="top-actions" id="topbar-actions">
+      <button type="button" class="btn-theme" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button>
+      <a href="/login" class="btn btn-ghost btn-sm">Sign in</a>
+      <a href="/login#register" class="btn btn-primary btn-sm">Get started <span class="arrow">→</span></a>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <section class="page-hero wrap">
+      <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">Integrations</span></div>
+      <h1>Plug in once. Carry your rules everywhere.</h1>
+      <p>This page is the connection matrix for every supported product. HTTP MCP at <code>http://localhost:3500/mcp</code> for most clients. Step-by-step copy-ready snippets are in the Setup Guide after you sign in.</p>
+    </section>
+
+    <section class="matrix-section wrap">
+      <div class="matrix-intro">
+        <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">Compatibility matrix</span></div>
+        <p>Every client connects to the same single endpoint. Pick your tool, grab the config from the Setup Guide, and you're done.</p>
+      </div>
+      <div class="matrix-table-wrap">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Transport</th>
+              <th>get_preferences</th>
+              <th>save_preference</th>
+              <th>OpenAPI Actions</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="client-name">Claude Code</div><div class="client-sub">Anthropic CLI</div></td>
+              <td><span class="method-tag">HTTP MCP</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td style="font-size:13px;color:var(--ink-2);">Add CLAUDE.md instruction for auto-injection</td>
+            </tr>
+            <tr>
+              <td><div class="client-name">Claude Desktop</div><div class="client-sub">Anthropic app</div></td>
+              <td><span class="method-tag">HTTP MCP</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td style="font-size:13px;color:var(--ink-2);">Config via claude_desktop_config.json</td>
+            </tr>
+            <tr>
+              <td><div class="client-name">Cursor</div><div class="client-sub">AI code editor</div></td>
+              <td><span class="method-tag">HTTP MCP</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td style="font-size:13px;color:var(--ink-2);">~/.cursor/mcp.json · stdio adapter also available</td>
+            </tr>
+            <tr>
+              <td><div class="client-name">VS Code</div><div class="client-sub">+ GitHub Copilot Chat</div></td>
+              <td><span class="method-tag">HTTP MCP</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td style="font-size:13px;color:var(--ink-2);">Requires VS Code 1.99+ with Copilot extension</td>
+            </tr>
+            <tr>
+              <td><div class="client-name">Windsurf</div><div class="client-sub">Codeium editor</div></td>
+              <td><span class="method-tag">HTTP MCP</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td style="font-size:13px;color:var(--ink-2);">~/.codeium/windsurf/mcp_config.json</td>
+            </tr>
+            <tr>
+              <td><div class="client-name">Continue.dev</div><div class="client-sub">Open-source assistant</div></td>
+              <td><span class="method-tag">HTTP MCP</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td style="font-size:13px;color:var(--ink-2);">experimental.modelContextProtocolServers block</td>
+            </tr>
+            <tr>
+              <td><div class="client-name">Zed</div><div class="client-sub">GPU-accelerated editor</div></td>
+              <td><span class="method-tag">HTTP MCP</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td style="font-size:13px;color:var(--ink-2);">context_servers block in settings.json</td>
+            </tr>
+            <tr>
+              <td><div class="client-name">ChatGPT</div><div class="client-sub">Custom GPT Actions</div></td>
+              <td><span class="method-tag">OpenAPI</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td style="font-size:13px;color:var(--ink-2);">Requires public HTTPS URL (ngrok or tunnel)</td>
+            </tr>
+            <tr>
+              <td><div class="client-name">Any MCP client</div><div class="client-sub">Generic</div></td>
+              <td><span class="method-tag">HTTP MCP</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td style="font-size:13px;color:var(--ink-2);">Bearer auth · same endpoint for all</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="detail-section">
+      <div class="wrap">
+        <div class="section-eyebrow"><span class="eyebrow eyebrow-dot">Per-client details</span></div>
+        <h2 style="max-width:20ch;">What to know before you connect.</h2>
+        <div class="detail-grid">
+
+          <div class="detail-card">
+            <div class="dc-head"><span class="dc-glyph">&#x1F5B1;</span><h3>Cursor</h3></div>
+            <p><strong>HTTP:</strong> add an MCP server block in <code>.cursor/mcp.json</code> pointing at your deployment with a Bearer token.</p>
+            <p><strong>Stdio (advanced):</strong> open a checkout of the platform repo, use <code>.env</code> + <code>dist/mcp-stdio.js</code> for direct SQLite access — no web server required for MCP.</p>
+            <div class="dc-foot"><a href="/setup">Open Setup Guide →</a></div>
+          </div>
+
+          <div class="detail-card">
+            <div class="dc-head"><span class="dc-glyph">&#x1F916;</span><h3>Claude Code</h3></div>
+            <p>Merge the generated JSON into <code>~/.claude/.mcp.json</code> or project <code>.mcp.json</code>. Use <code>type: http</code> and your Bearer API key.</p>
+            <p>Add the session-start instruction to <code>CLAUDE.md</code> so <code>get_preferences</code> runs automatically.</p>
+            <div class="dc-foot"><a href="/setup">Open Setup Guide →</a></div>
+          </div>
+
+          <div class="detail-card">
+            <div class="dc-head"><span class="dc-glyph">&#x1F5A5;</span><h3>Claude Desktop</h3></div>
+            <p>Configure <code>claude_desktop_config.json</code> (macOS / Windows / Linux paths in the guide) with the same URL and Authorization header.</p>
+            <p>Some builds prefer adding remote MCP under <strong>Settings → Connectors</strong> — use the same endpoint and token.</p>
+            <div class="dc-foot"><a href="/setup">Open Setup Guide →</a></div>
+          </div>
+
+          <div class="detail-card">
+            <div class="dc-head"><span class="dc-glyph">&#x1F499;</span><h3>VS Code · Copilot Chat</h3></div>
+            <p>Use <code>.vscode/mcp.json</code> (schema varies slightly by VS Code version) with HTTP transport to <code>/mcp</code>.</p>
+            <p>Requires GitHub Copilot extension and a recent VS Code build with MCP support.</p>
+            <div class="dc-foot"><a href="/setup">Open Setup Guide →</a></div>
+          </div>
+
+          <div class="detail-card">
+            <div class="dc-head"><span class="dc-glyph">&#x1F30A;</span><h3>Windsurf</h3></div>
+            <p>Edit <code>~/.codeium/windsurf/mcp_config.json</code> and register the HTTP server with your Bearer key.</p>
+            <div class="dc-foot"><a href="/setup">Open Setup Guide →</a></div>
+          </div>
+
+          <div class="detail-card">
+            <div class="dc-head"><span class="dc-glyph">&#x25B6;</span><h3>Continue.dev</h3></div>
+            <p>Add an HTTP MCP transport entry under <code>experimental.modelContextProtocolServers</code> in <code>~/.continue/config.json</code>.</p>
+            <div class="dc-foot"><a href="/setup">Open Setup Guide →</a></div>
+          </div>
+
+          <div class="detail-card">
+            <div class="dc-head"><span class="dc-glyph">&#x26A1;</span><h3>Zed</h3></div>
+            <p>Merge <code>context_servers</code> in Zed's settings JSON; confirm field names against your Zed version's MCP docs.</p>
+            <div class="dc-foot"><a href="/setup">Open Setup Guide →</a></div>
+          </div>
+
+          <div class="detail-card">
+            <div class="dc-head"><span class="dc-glyph">&#x1F4AC;</span><h3>ChatGPT · Custom GPT</h3></div>
+            <p>Not MCP — import <code>/openapi.json</code> as a Custom GPT Action. Use Bearer auth with your API key.</p>
+            <p>For OpenAI's servers to reach you, expose your host with a tunnel (e.g. ngrok) and use the HTTPS URL in the action definition.</p>
+            <div class="dc-foot"><a href="/setup">Open Setup Guide →</a></div>
+          </div>
+
+          <div class="detail-card id-generic">
+            <div class="dc-head"><span class="dc-glyph">&#x1F50C;</span><h3>Any MCP client</h3></div>
+            <p><strong>URL:</strong> <code>http://YOUR_HOST:3500/mcp</code></p>
+            <p><strong>Auth:</strong> <code>Authorization: Bearer YOUR_API_KEY</code></p>
+            <p><strong>Core tools:</strong> <code>get_preferences</code>, <code>save_preference</code>, <code>list_preferences_with_ids</code>, <code>delete_preference</code></p>
+            <div class="dc-foot"><a href="/login">Get your API key →</a></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-strip wrap">
+      <div class="cta-strip-inner card-flat">
+        <div>
+          <div class="section-eyebrow" style="margin-bottom:16px;"><span class="eyebrow eyebrow-dot">Next step</span></div>
+          <h2>Create an account to unlock the Setup Guide.</h2>
+          <p>Copy-ready configs with your API key pre-filled for every supported client.</p>
+        </div>
+        <div class="cta-strip-actions">
+          <a href="/login#register" class="btn btn-signal btn-lg">Get started <span class="arrow">→</span></a>
+          <a href="/tools" class="btn btn-ghost btn-lg">Browse tools</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="brand" style="margin-bottom:16px;"><span class="brand-mark"></span><span>Instill AI</span></div>
+        <p style="font-size:13px;color:var(--ink-3);max-width:28ch;">Self-hosted preference server for the Model Context Protocol. Your rules. Every session.</p>
+      </div>
+      <div class="footer-col"><h5>Product</h5><a href="/home">Overview</a><a href="/integrations">Integrations</a><a href="/tools">Tools</a><a href="/roadmap">Roadmap</a><a href="/pricing">Pricing</a></div>
+      <div class="footer-col"><h5>Account</h5><a href="/login">Sign in</a><a href="/login#register">Register</a><a href="/dashboard">Dashboard</a><a href="/setup">Setup Guide</a></div>
+      <div class="footer-col"><h5>Legal</h5><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Instill AI · Self-hosted, your data, your rules</span><span>v2.0 · build 2026.05</span></div>
+  </footer>
+</div>
+<script src="/scroll-animations.js" defer></script>
+<script src="/theme.js"></script>
+<script src="/auth-nav.js" defer></script>
+</body>
+</html>

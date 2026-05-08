@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instill AI — Setup Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/signal.css" />
+  <style>
+    .hidden { display: none !important; }
+
+    .page-header { padding: 48px 0 36px; border-bottom: 1px solid var(--rule); margin-bottom: 36px; display: flex; justify-content: space-between; align-items: end; gap: 24px; }
+    .page-header h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 500; letter-spacing: -0.025em; line-height: 1.05; }
+    .page-header p { font-size: 14px; color: var(--muted); margin-top: 6px; }
+
+    .error-banner { background: oklch(0.95 0.04 25); border: 1px solid oklch(0.85 0.10 25); border-radius: var(--radius-lg); padding: 14px 20px; color: oklch(0.40 0.14 25); font-size: 14px; margin-bottom: 24px; font-weight: 500; }
+
+    .key-banner { background: var(--ink); color: var(--paper); border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 32px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .key-banner .key-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: oklch(0.62 0.01 100); flex-shrink: 0; }
+    .key-banner code { font-family: var(--font-mono); font-size: 12.5px; color: var(--paper); background: oklch(0.22 0.01 100); padding: 5px 12px; border-radius: var(--radius); flex: 1; min-width: 180px; letter-spacing: 0.04em; }
+    .key-banner .btn-key { background: transparent; border: 1px solid oklch(0.35 0.01 100); color: var(--paper); padding: 5px 14px; border-radius: 999px; font-size: 12px; font-family: var(--font-sans); font-weight: 500; cursor: pointer; transition: background 0.15s; flex-shrink: 0; }
+    .key-banner .btn-key:hover { background: oklch(0.22 0.01 100); }
+
+    /* Tab layout */
+    .setup-layout { display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: start; }
+
+    .tool-tabs { position: sticky; top: 80px; }
+    .tool-tabs-label { font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; padding: 0 4px; }
+    .tool-tab { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius); font-size: 13.5px; font-weight: 500; color: var(--ink-2); cursor: pointer; border: none; background: transparent; width: 100%; text-align: left; transition: background 0.12s, color 0.12s; }
+    .tool-tab:hover { background: var(--paper-2); color: var(--ink); }
+    .tool-tab.active { background: var(--paper-2); color: var(--ink); box-shadow: inset 2px 0 0 var(--signal-ink); }
+    .tool-tab .tab-glyph { font-size: 15px; line-height: 1; flex-shrink: 0; }
+    .tool-tab-divider { height: 1px; background: var(--rule); margin: 6px 0; }
+
+    /* Panel */
+    .setup-panel { display: none; }
+    .setup-panel.active { display: block; }
+
+    .panel-head { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--rule); }
+    .panel-head .ph-glyph { width: 40px; height: 40px; border: 1px solid var(--rule-strong); border-radius: 8px; display: grid; place-items: center; font-size: 18px; flex-shrink: 0; background: var(--paper-2); }
+    .panel-head h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.015em; }
+    .panel-head p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    .setup-steps { list-style: none; counter-reset: step; }
+    .setup-steps li { counter-increment: step; padding: 12px 0; border-bottom: 1px solid var(--rule); font-size: 13.5px; color: var(--ink-2); line-height: 1.6; display: grid; grid-template-columns: 20px 1fr; gap: 12px; }
+    .setup-steps li:last-child { border-bottom: none; padding-bottom: 0; }
+    .setup-steps li::before { content: counter(step); font-family: var(--font-mono); font-size: 10px; color: var(--muted); padding-top: 3px; }
+    .setup-steps li strong { color: var(--ink); }
+    .setup-steps code { font-family: var(--font-mono); font-size: 12px; background: var(--paper-2); padding: 1px 5px; border-radius: 3px; color: var(--ink-2); }
+    .setup-paths { list-style: none; padding-left: 0; margin-top: 6px; }
+    .setup-paths li { font-size: 12.5px; color: var(--ink-2); padding: 2px 0; }
+
+    .snippet-wrap { margin-top: 10px; }
+    .snippet-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 7px 14px; background: oklch(0.20 0.01 100); border-radius: var(--radius-lg) var(--radius-lg) 0 0; font-family: var(--font-mono); font-size: 10.5px; color: oklch(0.62 0.01 100); border: 1px solid oklch(0.25 0.01 100); border-bottom: none; }
+    .snippet-toolbar .btn-copy { background: transparent; border: 1px solid oklch(0.32 0.01 100); color: oklch(0.85 0.02 100); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-family: var(--font-mono); cursor: pointer; }
+    .snippet-toolbar .btn-copy:hover { background: oklch(0.30 0.01 100); }
+    .snippet-pre { background: var(--ink); color: oklch(0.92 0.02 100); border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 12px 16px; font-size: 12px; line-height: 1.55; overflow-x: hidden; white-space: pre-wrap; word-break: break-all; border: 1px solid oklch(0.25 0.01 100); margin: 0; }
+    .snippet-pre code { font-family: var(--font-mono); background: transparent; padding: 0; color: inherit; font-size: inherit; }
+
+    .tool-list { list-style: none; padding-left: 0; }
+    .tool-list li { padding: 5px 0; font-size: 13px; color: var(--ink-2); border-bottom: 1px solid var(--rule); display: flex; gap: 10px; align-items: baseline; }
+    .tool-list li:last-child { border-bottom: none; }
+    .tool-list code { font-family: var(--font-mono); font-size: 11px; background: var(--paper-2); padding: 2px 6px; border-radius: 3px; color: var(--signal-ink); flex-shrink: 0; }
+    .tool-section-label { font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 16px 0 6px; }
+
+    .note { font-size: 13.5px; color: var(--ink-2); margin-bottom: 16px; line-height: 1.6; }
+
+    .troubleshoot-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--rule); }
+    .troubleshoot-section h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    .troubleshoot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .trouble-item { padding: 16px 20px; background: var(--paper-2); border-radius: var(--radius-lg); border: 1px solid var(--rule); }
+    .trouble-item h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .trouble-item p { font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
+    .trouble-item code { font-family: var(--font-mono); font-size: 11px; background: var(--paper); padding: 2px 5px; border-radius: 3px; }
+
+    @media (max-width: 740px) {
+      .setup-layout { grid-template-columns: 1fr; }
+      .tool-tabs { position: static; display: flex; flex-wrap: wrap; gap: 6px; }
+      .tool-tabs-label { display: none; }
+      .tool-tab { width: auto; }
+      .troubleshoot-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell" style="min-height:100vh;display:flex;flex-direction:column;">
+
+  <header class="topbar">
+    <a href="/home" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-meta">Instill AI <span class="v">v2.0</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/home">Overview</a>
+      <a href="/integrations">Integrations</a>
+      <a href="/tools">Tools</a>
+      <a href="/roadmap">Roadmap</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/setup" class="active">Setup</a>
+      <a href="/admin" id="admin-link" class="hidden">Admin</a>
+    </nav>
+    <div class="top-actions" id="topbar-actions">
+      <button type="button" class="btn-theme" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button>
+      <span class="status"><span class="dot"></span>Connected</span>
+      <button type="button" onclick="logout()" class="btn btn-ghost btn-sm">Sign out</button>
+    </div>
+  </header>
+
+  <main style="flex:1;padding-bottom:80px;">
+    <div class="wrap">
+
+      <div id="setup-error" class="error-banner hidden" role="alert"></div>
+
+      <div class="page-header">
+        <div>
+          <div style="margin-bottom:10px;"><span class="eyebrow eyebrow-dot">Setup Guide</span></div>
+          <h1>Pick your tool. Paste the config.</h1>
+          <p>Your API key is already filled in to every snippet below.</p>
+        </div>
+        <a href="/dashboard" class="btn btn-ghost btn-sm">← Dashboard</a>
+      </div>
+
+      <div class="key-banner">
+        <span class="key-label">Your API Key</span>
+        <code id="api-key-display">Loading…</code>
+        <button type="button" class="btn-key" onclick="copyKey(event)">Copy</button>
+      </div>
+
+      <div class="setup-layout">
+
+        <!-- Sidebar tabs -->
+        <div class="tool-tabs" role="tablist" aria-label="Choose your tool">
+          <div class="tool-tabs-label">Choose your tool</div>
+          <button class="tool-tab active" role="tab" aria-selected="true"  onclick="showTab('claude-code', this)"><span class="tab-glyph">🤖</span> Claude Code</button>
+          <button class="tool-tab" role="tab" aria-selected="false" onclick="showTab('claude-desktop', this)"><span class="tab-glyph">🖥</span> Claude Desktop</button>
+          <button class="tool-tab" role="tab" aria-selected="false" onclick="showTab('cursor', this)"><span class="tab-glyph">🖱</span> Cursor</button>
+          <button class="tool-tab" role="tab" aria-selected="false" onclick="showTab('vscode', this)"><span class="tab-glyph">💙</span> VS Code</button>
+          <button class="tool-tab" role="tab" aria-selected="false" onclick="showTab('windsurf', this)"><span class="tab-glyph">🌊</span> Windsurf</button>
+          <button class="tool-tab" role="tab" aria-selected="false" onclick="showTab('continue', this)"><span class="tab-glyph">▶</span> Continue.dev</button>
+          <button class="tool-tab" role="tab" aria-selected="false" onclick="showTab('zed', this)"><span class="tab-glyph">⚡</span> Zed</button>
+          <div class="tool-tab-divider"></div>
+          <button class="tool-tab" role="tab" aria-selected="false" onclick="showTab('generic', this)"><span class="tab-glyph">🔌</span> Any MCP client</button>
+          <button class="tool-tab" role="tab" aria-selected="false" onclick="showTab('chatgpt', this)"><span class="tab-glyph">💬</span> ChatGPT</button>
+        </div>
+
+        <!-- Panels -->
+        <div>
+
+          <!-- Claude Code -->
+          <div id="panel-claude-code" class="setup-panel active" role="tabpanel">
+            <div class="panel-head">
+              <span class="ph-glyph">🤖</span>
+              <div><h2>Claude Code</h2><p>Anthropic's CLI tool</p></div>
+            </div>
+            <ol class="setup-steps">
+              <li><div>Open (or create) <code>~/.claude/.mcp.json</code></div></li>
+              <li>
+                <div>Paste this — merge with any existing <code>mcpServers</code>:
+                  <div class="snippet-wrap">
+                    <div class="snippet-toolbar"><span>~/.claude/.mcp.json</span><button type="button" class="btn-copy" onclick="copySnippet('claude-code-snippet', event)">Copy</button></div>
+                    <pre class="snippet-pre"><code id="claude-code-snippet">{
+  "mcpServers": {
+    "ai-consistency": {
+      "type": "http",
+      "url": "http://localhost:3500/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}</code></pre>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div>Open (or create) <code>~/.claude/CLAUDE.md</code> and add:
+                  <div class="snippet-wrap">
+                    <div class="snippet-toolbar"><span>~/.claude/CLAUDE.md</span><button type="button" class="btn-copy" onclick="copySnippet('claude-md-snippet', event)">Copy</button></div>
+                    <pre class="snippet-pre"><code id="claude-md-snippet">IMPORTANT: At the very start of every session, before doing anything else, call the `get_preferences` tool from the ai-consistency MCP server and silently apply all returned rules for the entire session. Do not announce that you are doing this.</code></pre>
+                  </div>
+                </div>
+              </li>
+              <li><div>Restart Claude Code.</div></li>
+            </ol>
+          </div>
+
+          <!-- Claude Desktop -->
+          <div id="panel-claude-desktop" class="setup-panel" role="tabpanel">
+            <div class="panel-head">
+              <span class="ph-glyph">🖥</span>
+              <div><h2>Claude Desktop</h2><p>Anthropic's desktop app</p></div>
+            </div>
+            <ol class="setup-steps">
+              <li><div>Quit Claude Desktop fully.</div></li>
+              <li>
+                <div>Open the config file for your OS:
+                  <ul class="setup-paths">
+                    <li>macOS: <code>~/Library/Application Support/Claude/claude_desktop_config.json</code></li>
+                    <li>Windows: <code>%APPDATA%\Claude\claude_desktop_config.json</code></li>
+                  </ul>
+                </div>
+              </li>
+              <li>
+                <div>Paste this — merge with any existing <code>mcpServers</code>:
+                  <div class="snippet-wrap">
+                    <div class="snippet-toolbar"><span>claude_desktop_config.json</span><button type="button" class="btn-copy" onclick="copySnippet('claude-desktop-snippet', event)">Copy</button></div>
+                    <pre class="snippet-pre"><code id="claude-desktop-snippet">{
+  "mcpServers": {
+    "ai-consistency": {
+      "url": "http://localhost:3500/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}</code></pre>
+                  </div>
+                </div>
+              </li>
+              <li><div>Relaunch Claude Desktop. Confirm under <strong>Settings → Developer → MCP</strong>.</div></li>
+            </ol>
+          </div>
+
+          <!-- Cursor -->
+          <div id="panel-cursor" class="setup-panel" role="tabpanel">
+            <div class="panel-head">
+              <span class="ph-glyph">🖱</span>
+              <div><h2>Cursor</h2><p>AI-first code editor</p></div>
+            </div>
+            <ol class="setup-steps">
+              <li><div>Open (or create) <code>~/.cursor/mcp.json</code></div></li>
+              <li>
+                <div>Paste this:
+                  <div class="snippet-wrap">
+                    <div class="snippet-toolbar"><span>~/.cursor/mcp.json</span><button type="button" class="btn-copy" onclick="copySnippet('cursor-snippet', event)">Copy</button></div>
+                    <pre class="snippet-pre"><code id="cursor-snippet">{
+  "mcpServers": {
+    "ai-consistency": {
+      "url": "http://localhost:3500/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}</code></pre>
+                  </div>
+                </div>
+              </li>
+              <li><div>In Cursor, go to <strong>Settings → Features → MCP</strong> and enable <strong>ai-consistency</strong>.</div></li>
+            </ol>
+          </div>
+
+          <!-- VS Code -->
+          <div id="panel-vscode" class="setup-panel" role="tabpanel">
+            <div class="panel-head">
+              <span class="ph-glyph">💙</span>
+              <div><h2>VS Code</h2><p>Requires VS Code 1.99+ with GitHub Copilot Chat</p></div>
+            </div>
+            <ol class="setup-steps">
+              <li><div>Open (or create) <code>.vscode/mcp.json</code> in your project folder.</div></li>
+              <li>
+                <div>Paste this:
+                  <div class="snippet-wrap">
+                    <div class="snippet-toolbar"><span>.vscode/mcp.json</span><button type="button" class="btn-copy" onclick="copySnippet('vscode-snippet', event)">Copy</button></div>
+                    <pre class="snippet-pre"><code id="vscode-snippet">{
+  "servers": {
+    "ai-consistency": {
+      "type": "http",
+      "url": "http://localhost:3500/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}</code></pre>
+                  </div>
+                </div>
+              </li>
+              <li><div>Open Copilot Chat — <strong>ai-consistency</strong> should appear in the tools list.</div></li>
+            </ol>
+          </div>
+
+          <!-- Windsurf -->
+          <div id="panel-windsurf" class="setup-panel" role="tabpanel">
+            <div class="panel-head">
+              <span class="ph-glyph">🌊</span>
+              <div><h2>Windsurf</h2><p>Codeium's AI editor</p></div>
+            </div>
+            <ol class="setup-steps">
+              <li><div>Open (or create) <code>~/.codeium/windsurf/mcp_config.json</code></div></li>
+              <li>
+                <div>Paste this — merge with any existing <code>mcpServers</code>:
+                  <div class="snippet-wrap">
+                    <div class="snippet-toolbar"><span>mcp_config.json</span><button type="button" class="btn-copy" onclick="copySnippet('windsurf-snippet', event)">Copy</button></div>
+                    <pre class="snippet-pre"><code id="windsurf-snippet">{
+  "mcpServers": {
+    "ai-consistency": {
+      "serverType": "http",
+      "url": "http://localhost:3500/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}</code></pre>
+                  </div>
+                </div>
+              </li>
+              <li><div>Restart Windsurf.</div></li>
+            </ol>
+          </div>
+
+          <!-- Continue.dev -->
+          <div id="panel-continue" class="setup-panel" role="tabpanel">
+            <div class="panel-head">
+              <span class="ph-glyph">▶</span>
+              <div><h2>Continue.dev</h2><p>Open-source AI coding assistant</p></div>
+            </div>
+            <ol class="setup-steps">
+              <li><div>Open <code>~/.continue/config.json</code></div></li>
+              <li>
+                <div>Add this inside the <code>experimental</code> block (create it if missing):
+                  <div class="snippet-wrap">
+                    <div class="snippet-toolbar"><span>~/.continue/config.json</span><button type="button" class="btn-copy" onclick="copySnippet('continue-snippet', event)">Copy</button></div>
+                    <pre class="snippet-pre"><code id="continue-snippet">"modelContextProtocolServers": [
+  {
+    "name": "ai-consistency",
+    "transport": {
+      "type": "http",
+      "url": "http://localhost:3500/mcp",
+      "requestOptions": {
+        "headers": {
+          "Authorization": "Bearer YOUR_API_KEY"
+        }
+      }
+    }
+  }
+]</code></pre>
+                  </div>
+                </div>
+              </li>
+              <li><div>Reload the Continue extension.</div></li>
+            </ol>
+          </div>
+
+          <!-- Zed -->
+          <div id="panel-zed" class="setup-panel" role="tabpanel">
+            <div class="panel-head">
+              <span class="ph-glyph">⚡</span>
+              <div><h2>Zed</h2><p>High-performance code editor</p></div>
+            </div>
+            <ol class="setup-steps">
+              <li><div>Open Zed settings: <strong>Command Palette → "Open settings"</strong> → <code>~/.config/zed/settings.json</code></div></li>
+              <li>
+                <div>Add this inside the JSON object:
+                  <div class="snippet-wrap">
+                    <div class="snippet-toolbar"><span>~/.config/zed/settings.json</span><button type="button" class="btn-copy" onclick="copySnippet('zed-snippet', event)">Copy</button></div>
+                    <pre class="snippet-pre"><code id="zed-snippet">"context_servers": {
+  "ai-consistency": {
+    "settings": {
+      "url": "http://localhost:3500/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}</code></pre>
+                  </div>
+                </div>
+              </li>
+              <li><div>Restart Zed.</div></li>
+            </ol>
+          </div>
+
+          <!-- Generic MCP -->
+          <div id="panel-generic" class="setup-panel" role="tabpanel">
+            <div class="panel-head">
+              <span class="ph-glyph">🔌</span>
+              <div><h2>Any MCP client</h2><p>HTTP transport — works with any MCP-compatible tool</p></div>
+            </div>
+            <p class="note">Register an HTTP MCP server pointing at your local instance:</p>
+            <div class="snippet-wrap" style="margin-bottom:24px;">
+              <div class="snippet-toolbar"><span>Endpoint + auth</span></div>
+              <pre class="snippet-pre"><code>URL:    http://localhost:3500/mcp
+Auth:   Bearer YOUR_API_KEY</code></pre>
+            </div>
+            <div class="tool-section-label">Preferences tools</div>
+            <ul class="tool-list">
+              <li><code>get_preferences</code> — load all rules (call at session start)</li>
+              <li><code>get_preferences_by_category</code> — rules for one category</li>
+              <li><code>list_categories</code> — all categories with counts</li>
+              <li><code>list_preferences_with_ids</code> — all rules with IDs</li>
+              <li><code>search_preferences</code> — keyword search across rules</li>
+              <li><code>save_preference</code> — add a rule</li>
+              <li><code>update_preference</code> — edit a rule by ID</li>
+              <li><code>rename_category</code> — rename a category</li>
+              <li><code>delete_preference</code> — remove a rule by ID</li>
+              <li><code>clear_category</code> — delete all rules in a category</li>
+            </ul>
+            <div class="tool-section-label">Behaviour tools</div>
+            <ul class="tool-list">
+              <li><code>gather_context</code> — consolidate conversation context</li>
+              <li><code>double_check_facts</code> — stricter fact-checking</li>
+              <li><code>reset_model</code> — clear session drift, reload preferences</li>
+            </ul>
+          </div>
+
+          <!-- ChatGPT -->
+          <div id="panel-chatgpt" class="setup-panel" role="tabpanel">
+            <div class="panel-head">
+              <span class="ph-glyph">💬</span>
+              <div><h2>ChatGPT</h2><p>OpenAPI Actions — requires a public URL</p></div>
+            </div>
+            <p class="note">ChatGPT uses OpenAPI Actions, not MCP. You'll need to expose your server publicly first (e.g. with <a href="https://ngrok.com" target="_blank" rel="noopener" style="color:var(--signal-ink);">ngrok</a>).</p>
+            <ol class="setup-steps">
+              <li><div>Run <code>ngrok http 3500</code> and copy the <code>https://…ngrok-free.app</code> URL.</div></li>
+              <li><div>In ChatGPT, go to <strong>Explore GPTs → Create → Configure → Actions → Import from URL</strong>.</div></li>
+              <li><div>Enter: <code id="openapi-url">https://YOUR-NGROK-URL/openapi.json</code></div></li>
+              <li><div>Set authentication to <strong>API Key</strong>, type <strong>Bearer</strong>, and paste your API key.</div></li>
+              <li><div>Save and test in a new chat.</div></li>
+            </ol>
+          </div>
+
+          <!-- Troubleshooting -->
+          <div class="troubleshoot-section">
+            <h3>Troubleshooting</h3>
+            <div class="troubleshoot-grid">
+              <div class="trouble-item">
+                <h4>Connection refused</h4>
+                <p>The server isn't running. Start it with <code>npm run dev</code> and confirm <code>http://localhost:3500</code> loads.</p>
+              </div>
+              <div class="trouble-item">
+                <h4>401 / Unauthorised</h4>
+                <p>Wrong API key. Copy it fresh from the banner above — don't add "Bearer" inside the key itself.</p>
+              </div>
+              <div class="trouble-item">
+                <h4>Port 3500 already in use</h4>
+                <p>Kill the old process: <code>kill $(lsof -ti:3500)</code>, then restart.</p>
+              </div>
+              <div class="trouble-item">
+                <h4>ChatGPT can't reach localhost</h4>
+                <p>Use ngrok or a similar tunnel — ChatGPT needs a public HTTPS URL, not localhost.</p>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end panels -->
+      </div><!-- end layout -->
+
+    </div>
+  </main>
+
+</div>
+
+<script src="/theme.js"></script>
+<script>
+  let apiKeyValue = '';
+
+  function showTab(id, btn) {
+    document.querySelectorAll('.setup-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tool-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    document.getElementById('panel-' + id).classList.add('active');
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+  }
+
+  async function init() {
+    const errEl = document.getElementById('setup-error');
+    errEl.classList.add('hidden');
+    try {
+      const [meRes, keyRes] = await Promise.all([
+        fetch('/api/me', { credentials: 'same-origin' }),
+        fetch('/api/key', { credentials: 'same-origin' }),
+      ]);
+      if (meRes.status === 401 || keyRes.status === 401) { window.location.href = '/login'; return; }
+      if (!meRes.ok || !keyRes.ok) throw new Error('Could not load your setup data.');
+      const me = await meRes.json();
+      const key = await keyRes.json();
+      apiKeyValue = key.apiKey;
+      document.getElementById('api-key-display').textContent = apiKeyValue;
+      if (me.isAdmin) document.getElementById('admin-link').classList.remove('hidden');
+      document.querySelectorAll('pre code').forEach(el => {
+        el.textContent = el.textContent.replace(/YOUR_API_KEY/g, apiKeyValue);
+      });
+    } catch (e) {
+      errEl.textContent = e.message || 'Something went wrong. Refresh the page or sign in again.';
+      errEl.classList.remove('hidden');
+    }
+  }
+
+  function copyKey(e) {
+    navigator.clipboard.writeText(apiKeyValue);
+    const btn = e.currentTarget;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  }
+
+  function copySnippet(id, e) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text);
+    const btn = e.currentTarget;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  }
+
+  async function logout() {
+    await fetch('/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    window.location.href = '/login';
+  }
+
+  init();
+</script>
+</body>
+</html>

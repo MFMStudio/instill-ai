@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instill AI — Terms of Use</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/signal.css" />
+  <style>
+    .legal-wrap { max-width: 720px; margin: 0 auto; padding: 64px 32px 120px; }
+    .legal-eyebrow { margin-bottom: 24px; }
+    .legal-wrap h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.0; margin-bottom: 20px; }
+    .legal-lead { font-size: 17px; color: var(--ink-2); line-height: 1.6; margin-bottom: 48px; border-bottom: 1px solid var(--rule); padding-bottom: 32px; }
+    .legal-wrap h2 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin: 36px 0 10px; color: var(--ink); }
+    .legal-wrap p { font-size: 14.5px; color: var(--ink-2); line-height: 1.7; margin-bottom: 0; }
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:300;padding:10px 18px;background:var(--ink);color:var(--paper);font-weight:600;font-size:14px;text-decoration:none;border-radius:0 0 8px 8px;">Skip to content</a>
+<div class="shell">
+
+  <header class="topbar">
+    <a href="/home" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-meta">Instill AI <span class="v">v2.0</span></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="/home">Overview</a>
+      <a href="/integrations">Integrations</a>
+      <a href="/tools">Tools</a>
+      <a href="/roadmap">Roadmap</a>
+      <a href="/pricing">Pricing</a>
+    </nav>
+    <div class="top-actions" id="topbar-actions">
+      <button type="button" class="btn-theme" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☾</button>
+      <a href="/login" class="btn btn-ghost btn-sm">Sign in</a>
+      <a href="/login#register" class="btn btn-primary btn-sm">Get started <span class="arrow">→</span></a>
+    </div>
+  </header>
+
+  <main id="main-content" style="flex:1;">
+    <div class="legal-wrap">
+      <div class="legal-eyebrow"><span class="eyebrow eyebrow-dot">Legal</span></div>
+      <h1>Terms of use</h1>
+      <p class="legal-lead">These terms apply to use of the <strong>Instill AI</strong> software. Because deployments are self-hosted, your employer or host may add additional policies.</p>
+
+      <h2>Software</h2>
+      <p>The platform is provided as-is for running preference storage and MCP/OpenAPI endpoints. You are responsible for securing your server, rotating API keys, and complying with laws that apply to you.</p>
+
+      <h2>Acceptable use</h2>
+      <p>Do not use the platform to store or distribute unlawful content, to attack systems, or to violate the terms of the AI products you connect.</p>
+
+      <h2>No warranty</h2>
+      <p>The software is provided without warranty of any kind. Operators deploy at their own risk and should maintain backups of their database.</p>
+
+      <h2>Pricing copy on this site</h2>
+      <p>Marketing pages may describe example plans (Starter, Pro, Team, Enterprise). Enabling billing and enforcing limits is the responsibility of whoever operates a given deployment unless you use a managed offering from a vendor that states otherwise.</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-grid">
+      <div class="footer-col">
+        <div class="footer-brand">
+          <span class="brand-mark" style="width:20px;height:20px;"></span>
+          <span style="font-weight:600;font-size:14px;">Instill AI</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-top:10px;">Self-hosted. Your data, your rules.</p>
+      </div>
+      <div class="footer-col"><h5>Product</h5><a href="/home">Overview</a><a href="/integrations">Integrations</a><a href="/tools">Tools</a><a href="/roadmap">Roadmap</a><a href="/pricing">Pricing</a></div>
+      <div class="footer-col"><h5>Account</h5><a href="/login">Sign in</a><a href="/login#register">Register</a><a href="/dashboard">Dashboard</a><a href="/setup">Setup Guide</a></div>
+      <div class="footer-col"><h5>Legal</h5><a href="/terms" style="color:var(--ink);font-weight:500;">Terms</a><a href="/privacy">Privacy</a></div>
+    </div>
+    <div class="wrap" style="padding-top:24px;border-top:1px solid var(--rule);margin-top:32px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:12px;color:var(--muted);">© 2026 Instill AI</span>
+      <span style="font-family:var(--font-mono);font-size:11px;color:var(--muted);">v2.0</span>
+    </div>
+  </footer>
+
+</div>
+
+<script src="/theme.js"></script>
+<script src="/auth-nav.js" defer></script>
+</body>
+</html>
