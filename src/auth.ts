@@ -10,6 +10,19 @@ declare module "express-session" {
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
+  // Accept API key via Bearer token as an alternative to session auth
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    const apiKey = authHeader.slice(7);
+    const user = userQueries.findByApiKey.get(apiKey) as any;
+    if (user) {
+      req.session.userId = user.id;
+      req.session.email = user.email;
+      req.session.isAdmin = user.is_admin === 1;
+      return next();
+    }
+  }
+
   if (!req.session.userId) {
     /** API routes must return JSON — redirects break fetch('/api/...') from marketing pages (session looks "missing"). */
     const url = req.originalUrl || req.url || "";
