@@ -22,6 +22,17 @@ function snapshotPref(pref: { id: string; user_id: number; category: string; rul
 }
 
 // ── Preferences ────────────────────────────────────────────────────────────
+
+// !! Reorder MUST be registered before /:id or Express matches "reorder" as an id param
+router.put("/api/preferences/reorder", requireAuth, (req: Request, res: Response) => {
+  const { order } = req.body as { order: { id: string; sortOrder: number }[] };
+  if (!Array.isArray(order)) { res.status(400).json({ error: "order array required" }); return; }
+  for (const item of order) {
+    prefQueries.updateSortOrder.run({ sortOrder: item.sortOrder, id: item.id, userId: req.session.userId! });
+  }
+  res.json({ success: true });
+});
+
 router.get("/api/preferences", requireAuth, (req: Request, res: Response) => {
   const prefs = prefQueries.listByUser.all(req.session.userId!);
   res.json(prefs);
@@ -113,16 +124,6 @@ router.post("/api/preferences/:id/restore/:revisionId", requireAuth, (req: Reque
   });
 
   res.json({ success: true, restored: { category: revision.category, rule: revision.rule } });
-});
-
-// ── Reorder ────────────────────────────────────────────────────────────────
-router.put("/api/preferences/reorder", requireAuth, (req: Request, res: Response) => {
-  const { order } = req.body as { order: { id: string; sortOrder: number }[] };
-  if (!Array.isArray(order)) { res.status(400).json({ error: "order array required" }); return; }
-  for (const item of order) {
-    prefQueries.updateSortOrder.run({ sortOrder: item.sortOrder, id: item.id, userId: req.session.userId! });
-  }
-  res.json({ success: true });
 });
 
 // ── Categories ─────────────────────────────────────────────────────────────

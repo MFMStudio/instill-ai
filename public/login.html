@@ -243,7 +243,7 @@
     try { history.replaceState(null, '', tab === 'register' ? '/login#register' : '/login'); } catch (e) {}
   }
 
-  if (location.hash === '#register') showTab('register');
+  if (location.hash.startsWith('#register')) showTab('register');
 
   async function submitForm(e, type) {
     e.preventDefault();

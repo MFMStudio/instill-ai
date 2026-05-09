@@ -483,8 +483,11 @@ Auth:   Bearer YOUR_API_KEY</code></pre>
       apiKeyValue = key.apiKey;
       document.getElementById('api-key-display').textContent = apiKeyValue;
       if (me.isAdmin) document.getElementById('admin-link').classList.remove('hidden');
+      const baseUrl = window.location.origin;
       document.querySelectorAll('pre code').forEach(el => {
-        el.textContent = el.textContent.replace(/YOUR_API_KEY/g, apiKeyValue);
+        el.textContent = el.textContent
+          .replace(/YOUR_API_KEY/g, apiKeyValue)
+          .replace(/http:\/\/localhost:3500/g, baseUrl);
       });
     } catch (e) {
       errEl.textContent = e.message || 'Something went wrong. Refresh the page or sign in again.';
