@@ -143,6 +143,17 @@ app.get("/metrics",           requireAdmin, (_req, res) => sendHtmlFile(res, pat
 app.get("/tools",             requireAuth,  (_req, res) => sendHtmlFile(res, path.join(publicRoot, "tools.html")));
 app.get("/checkout/success",  requireAuth,  (_req, res) => sendHtmlFile(res, path.join(publicRoot, "checkout-success.html")));
 
+// ── SEO files ──────────────────────────────────────────────────────────────
+app.get("/sitemap.xml", (_req, res) => {
+  res.type("application/xml");
+  sendHtmlFile(res, path.join(publicRoot, "sitemap.xml"));
+});
+
+app.get("/robots.txt", (_req, res) => {
+  res.type("text/plain");
+  sendHtmlFile(res, path.join(publicRoot, "robots.txt"));
+});
+
 // ── Static assets ──────────────────────────────────────────────────────────
 app.use(
   express.static(publicRoot, {

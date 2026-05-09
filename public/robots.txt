@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /setup
+Disallow: /api/
+Disallow: /mcp
+Disallow: /auth/
+Disallow: /checkout/
+
+Sitemap: https://instillai.co.uk/sitemap.xml

@@ -2,6 +2,7 @@ import express from "express";
 import Stripe from "stripe";
 import { requireAuth } from "../auth";
 import { userQueries } from "../db";
+import { syncStripeCustomerBilling } from "../stripeSync";
 
 const router = express.Router();
 
@@ -60,9 +61,14 @@ router.post("/api/checkout/create-session", requireAuth, async (req, res) => {
     // Re-use existing Stripe customer if present
     let customerId: string = user.stripe_customer_id || "";
     if (!customerId) {
+      const meta: Record<string, string> = { userId: String(user.id) };
+      const co = (user.company as string)?.trim?.();
+      if (co) meta.company = co;
       const customer = await stripe!.customers.create({
         email: user.email,
-        metadata: { userId: String(user.id) },
+        name: (user.full_name as string)?.trim?.() || undefined,
+        phone: (user.phone as string)?.trim?.() || undefined,
+        metadata: meta,
       });
       customerId = customer.id;
       userQueries.updatePlan.run({
@@ -74,8 +80,25 @@ router.post("/api/checkout/create-session", requireAuth, async (req, res) => {
       });
     }
 
+    await syncStripeCustomerBilling({
+      stripe: stripe!,
+      stripeCustomerId: customerId,
+      email: user.email,
+      fullName: user.full_name as string | undefined,
+      phone: user.phone as string | undefined,
+      company: user.company as string | undefined,
+      userId: user.id,
+    });
+
+    // Phone/name here + Dashboard billing profile reduce mismatches. If checkout still shows SMS to the
+    // wrong number, Stripe Link may have matched your email to another Link identity — try incognito,
+    // another email for testing, or Dashboard → Settings → Payment methods → Link.
+
     const checkoutSession = await stripe!.checkout.sessions.create({
       customer: customerId,
+      customer_update: { name: "auto", address: "auto", shipping: "auto" },
+      phone_number_collection: { enabled: true },
+      billing_address_collection: "auto",
       mode: "subscription",
       line_items: [{ price: planConfig.priceId, quantity: 1 }],
       success_url: `${base}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,

@@ -205,6 +205,12 @@
       <form id="form-register" class="auth-form hidden" role="tabpanel" aria-labelledby="tab-register" aria-hidden="true" onsubmit="submitForm(event, 'register')">
         <label for="register-email">Email</label>
         <input id="register-email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+        <label for="register-full-name">Full name <span style="font-weight:400;color:var(--muted)">(recommended)</span></label>
+        <input id="register-full-name" type="text" name="full_name" autocomplete="name" placeholder="Used on invoices &amp; Stripe checkout" />
+        <label for="register-phone">Phone <span style="font-weight:400;color:var(--muted)">(recommended for billing)</span></label>
+        <input id="register-phone" type="tel" name="phone" autocomplete="tel" placeholder="+44… · SMS codes go here if your bank/Stripe asks" />
+        <label for="register-company">Organisation <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+        <input id="register-company" type="text" name="company" autocomplete="organization" placeholder="Company or team name" />
         <label for="register-password">Password</label>
         <input id="register-password" type="password" name="password" autocomplete="new-password" placeholder="At least 8 characters" required minlength="8" />
         <button type="submit" class="auth-submit">Create account</button>

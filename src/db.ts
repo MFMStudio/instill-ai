@@ -109,6 +109,9 @@ const migrations = [
   `ALTER TABLE users ADD COLUMN stripe_customer_id TEXT`,
   `ALTER TABLE users ADD COLUMN stripe_subscription_id TEXT`,
   `ALTER TABLE users ADD COLUMN plan_expires_at TEXT`,
+  `ALTER TABLE users ADD COLUMN full_name TEXT`,
+  `ALTER TABLE users ADD COLUMN phone TEXT`,
+  `ALTER TABLE users ADD COLUMN company TEXT`,
   `ALTER TABLE preference_revisions ADD COLUMN updated_at TEXT DEFAULT (datetime('now'))`,
   `ALTER TABLE preferences ADD COLUMN scope_env TEXT DEFAULT NULL`,
   `ALTER TABLE preferences ADD COLUMN scope_project TEXT DEFAULT NULL`,
@@ -122,8 +125,8 @@ for (const sql of migrations) {
 // User queries
 export const userQueries = {
   create: db.prepare(`
-    INSERT INTO users (email, password_hash, api_key, is_admin)
-    VALUES (@email, @passwordHash, @apiKey, @isAdmin)
+    INSERT INTO users (email, password_hash, api_key, is_admin, full_name, phone, company)
+    VALUES (@email, @passwordHash, @apiKey, @isAdmin, @fullName, @phone, @company)
   `),
   findByEmail: db.prepare(`SELECT * FROM users WHERE email = ?`),
   findByApiKey: db.prepare(`SELECT * FROM users WHERE api_key = ?`),
@@ -143,6 +146,9 @@ export const userQueries = {
   updatePlanByCustomerId: db.prepare(`
     UPDATE users SET plan = @plan, stripe_subscription_id = @stripeSubscriptionId,
     plan_expires_at = @planExpiresAt WHERE stripe_customer_id = @stripeCustomerId
+  `),
+  updateProfile: db.prepare(`
+    UPDATE users SET full_name = @fullName, phone = @phone, company = @company WHERE id = @id
   `),
 };
 

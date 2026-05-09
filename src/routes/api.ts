@@ -1,9 +1,16 @@
 import { Router, Request, Response } from "express";
+import Stripe from "stripe";
 import { requireAuth, requireAdmin } from "../auth";
 import { userQueries, prefQueries, revisionQueries, generateApiKey, generateId } from "../db";
 import { fireWebhook } from "../webhooks";
+import { normalizePhone, syncStripeCustomerBilling } from "../stripeSync";
 
 const router = Router();
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
+const stripeClient = STRIPE_SECRET_KEY
+  ? new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2026-04-22.dahlia" as any })
+  : null;
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function snapshotPref(pref: { id: string; user_id: number; category: string; rule: string }, userId: number): void {
@@ -155,6 +162,47 @@ router.get("/api/me", requireAuth, (req: Request, res: Response) => {
     isAdmin:   user.is_admin === 1,
     plan:      user.plan || "free",
     createdAt: user.created_at,
+    fullName:  user.full_name ?? null,
+    phone:     user.phone ?? null,
+    company:   user.company ?? null,
+    hasStripeCustomer: !!user.stripe_customer_id,
+  });
+});
+
+router.patch("/api/me/profile", requireAuth, async (req: Request, res: Response) => {
+  const { full_name, phone, company } = req.body as Record<string, unknown>;
+  const fullName = typeof full_name === "string" ? full_name.trim().slice(0, 200) || null : null;
+  const phoneNorm = normalizePhone(phone);
+  const companyTrim = typeof company === "string" ? company.trim().slice(0, 200) || null : null;
+
+  const id = req.session.userId!;
+  userQueries.updateProfile.run({ id, fullName, phone: phoneNorm, company: companyTrim });
+
+  const user = userQueries.findById.get(id) as any;
+  let stripeWarning: string | undefined;
+  if (stripeClient && user?.stripe_customer_id) {
+    try {
+      await syncStripeCustomerBilling({
+        stripe: stripeClient,
+        stripeCustomerId: user.stripe_customer_id,
+        email: user.email,
+        fullName: user.full_name,
+        phone: user.phone,
+        company: user.company,
+        userId: id,
+      });
+    } catch (e: any) {
+      console.error("[Profile] Stripe sync:", e.message);
+      stripeWarning = "Saved here; Stripe billing profile could not be updated. Try again before checkout.";
+    }
+  }
+
+  res.json({
+    success: true,
+    fullName: user.full_name ?? null,
+    phone: user.phone ?? null,
+    company: user.company ?? null,
+    ...(stripeWarning ? { warning: stripeWarning } : {}),
   });
 });
 

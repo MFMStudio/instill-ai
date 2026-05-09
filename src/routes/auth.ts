@@ -3,6 +3,7 @@ import { Router, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { userQueries, generateApiKey } from "../db";
 import { sendHtmlFile } from "../sendHtml";
+import { normalizePhone } from "../stripeSync";
 
 const router = Router();
 /** Resolve from dist/routes/auth.js → project public/ regardless of cwd. */
@@ -14,7 +15,12 @@ router.get("/login", (_req: Request, res: Response) => {
 });
 
 router.post("/auth/register", async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const body = req.body as Record<string, unknown>;
+  const email = typeof body.email === "string" ? body.email.trim() : "";
+  const password = typeof body.password === "string" ? body.password : "";
+  const full_name = body.full_name;
+  const phone = body.phone;
+  const company = body.company;
   if (!email || !password) {
     res.status(400).json({ error: "Email and password required" });
     return;
@@ -36,7 +42,19 @@ router.post("/auth/register", async (req: Request, res: Response) => {
   const passwordHash = await bcrypt.hash(password, 12);
   const apiKey = generateApiKey();
 
-  userQueries.create.run({ email, passwordHash, apiKey, isAdmin });
+  const fullName = typeof full_name === "string" ? full_name.trim().slice(0, 200) || null : null;
+  const phoneNorm = normalizePhone(phone);
+  const companyTrim = typeof company === "string" ? company.trim().slice(0, 200) || null : null;
+
+  userQueries.create.run({
+    email,
+    passwordHash,
+    apiKey,
+    isAdmin,
+    fullName,
+    phone: phoneNorm,
+    company: companyTrim,
+  });
 
   const user = userQueries.findByEmail.get(email) as any;
   req.session.userId = user.id;
