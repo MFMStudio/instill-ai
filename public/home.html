@@ -164,6 +164,40 @@
       .feat-row { grid-template-columns: 40px 1fr; }
       .feat-row .desc, .feat-row .tag { grid-column: 2; justify-self: start; }
     }
+
+    @media (max-width: 640px) {
+      .hero { padding: 40px 0 48px; }
+      .hero h1 { font-size: clamp(28px, 9vw, 48px); }
+      .hero-sub { font-size: 15px; }
+      .hero-cta { flex-direction: column; }
+      .hero-cta .btn { width: 100%; justify-content: center; }
+      section.lede { padding: 64px 0; }
+      section.why { padding: 64px 0; }
+      section.features { padding: 64px 0; }
+      section.cta { padding: 56px 0; }
+      section.pull { padding: 56px 0; }
+      /* Use-cases 3-column to single */
+      section.pull [style*="grid-template-columns:repeat(3,1fr)"] { display: none; }
+      .pull > div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+      /* Tools strip: allow wrapping */
+      .tools-strip-inner { flex-wrap: wrap; gap: 16px; }
+      /* Step layout: fully single column */
+      .step { grid-template-columns: 1fr; gap: 8px; }
+      .step .num { display: none; }
+      .step .meta { grid-column: 1; }
+      .step .desc { grid-column: 1; }
+      /* Feat row: single column */
+      .feat-row { grid-template-columns: 1fr; gap: 8px; }
+      .feat-row .idx { display: none; }
+      .feat-row .desc, .feat-row .tag { grid-column: 1; justify-self: start; }
+      /* CTA actions: stack */
+      .cta-actions .btn { width: 100%; justify-content: center; }
+    }
+
+    /* Use-cases inline grid fix (it's an inline style — target via parent) */
+    @media (max-width: 640px) {
+      section.pull .wrap-narrow > div:last-child { display: grid; grid-template-columns: 1fr !important; gap: 24px; }
+    }
   </style>
 </head>
 <body>

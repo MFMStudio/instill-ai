@@ -87,6 +87,19 @@
       .tool-card.tool-featured { grid-column: 1; }
       .tool-meta { grid-template-columns: 1fr; }
     }
+
+    @media (max-width: 640px) {
+      .page-hero { padding: 48px 0 36px; }
+      .ref-section { padding: 40px 0 56px; }
+      /* Reference table: horizontal scroll */
+      .ref-table-wrap { -webkit-overflow-scrolling: touch; }
+      .ref-table { min-width: 540px; }
+      /* Tool examples: ensure code blocks scroll horizontally */
+      .tool-example pre { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .tool-card { padding: 20px 16px; }
+      .tool-card-top { flex-wrap: wrap; }
+      .group-header { flex-direction: column; gap: 6px; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>

@@ -187,6 +187,24 @@
       .cta-strip-inner { grid-template-columns: 1fr; }
       .cta-strip-actions { flex-wrap: wrap; }
     }
+
+    @media (max-width: 640px) {
+      .page-hero { padding: 48px 0 36px; }
+      .tiers-section { padding: 48px 0; }
+      .compare-section { padding: 48px 0; }
+      .faq-section { padding: 48px 0; }
+      .cta-strip { padding: 48px 0; }
+      .market-context-section { padding: 0 0 48px; }
+      .cta-strip-inner { padding: 28px 20px; }
+      .cta-strip-actions { flex-direction: column; width: 100%; }
+      .cta-strip-actions .btn { width: 100%; justify-content: center; }
+      .market-context-inner { padding: 24px 18px; }
+      .faq-item { padding: 20px 0; }
+      /* Comparison table: allow horizontal scroll with visual cue */
+      .compare-table-wrap { -webkit-overflow-scrolling: touch; }
+      .compare-table { min-width: 500px; }
+      .tier-price-amount { font-size: clamp(28px, 7vw, 44px); }
+    }
   </style>
 </head>
 <body>

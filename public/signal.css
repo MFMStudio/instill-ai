@@ -356,3 +356,17 @@ pre.code-block .p { color: oklch(0.75 0.02 100); }
   .nav { display: none; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
+
+@media (max-width: 640px) {
+  .topbar { padding: 12px 16px; gap: 12px; }
+  .wrap, .wrap-narrow { padding: 0 16px; }
+  .footer { padding: 48px 16px 32px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .footer-bottom { flex-direction: column; gap: 8px; }
+  h1 { font-size: clamp(28px, 8vw, 48px); }
+  h2 { font-size: clamp(22px, 6vw, 36px); }
+  .btn-lg { padding: 12px 20px; font-size: 14px; }
+  /* Ensure all buttons meet 44px tap target */
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 36px; }
+}

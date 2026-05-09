@@ -97,6 +97,18 @@
     @media (max-width: 600px) {
       .summary-panel { padding: 28px 22px; }
     }
+
+    @media (max-width: 640px) {
+      .page-hero { padding: 48px 0 40px; }
+      .pillar { padding: 40px 0 8px; }
+      .pillar h2 { font-size: clamp(22px, 7vw, 32px); }
+      /* Roadmap grid: single column on small screens */
+      .roadmap-grid { grid-template-columns: 1fr; }
+      .footnote-section { padding: 48px 0 64px; }
+      .footnote-section p { font-size: 14px; }
+      .footnote-section p .btn { display: inline-flex; margin-top: 8px; }
+      .legend { gap: 10px 16px; }
+    }
   </style>
 </head>
 <body>

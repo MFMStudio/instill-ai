@@ -77,6 +77,19 @@
       .cta-strip-inner { grid-template-columns: 1fr; }
       .cta-strip-actions { flex-wrap: wrap; }
     }
+
+    @media (max-width: 640px) {
+      .page-hero { padding: 48px 0 36px; }
+      .matrix-section { padding: 48px 0; }
+      .detail-section { padding: 48px 0; }
+      .cta-strip { padding: 48px 0; }
+      .cta-strip-inner { padding: 28px 20px; }
+      .cta-strip-actions { flex-direction: column; width: 100%; }
+      .cta-strip-actions .btn { width: 100%; justify-content: center; }
+      /* Matrix table: horizontal scroll */
+      .matrix-table-wrap { -webkit-overflow-scrolling: touch; }
+      .matrix-table { min-width: 560px; }
+    }
   </style>
 </head>
 <body>
