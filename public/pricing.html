@@ -596,9 +596,10 @@
   }
 
   async function startCheckout(plan) {
-    // If not logged in, redirect to register with plan hint
+    // If not logged in, save the plan and redirect to register
     if (!_isLoggedIn) {
-      window.location.href = '/login#register?plan=' + plan;
+      sessionStorage.setItem('pendingPlan', plan);
+      window.location.href = '/login#register';
       return;
     }
 
@@ -647,6 +648,15 @@
       if (!meRes.ok) return; // logged out — buttons work as sign-up redirects
 
       _isLoggedIn = true;
+
+      // If user just registered/logged in with a pending plan, auto-start checkout
+      var pendingPlan = sessionStorage.getItem('pendingPlan');
+      if (pendingPlan) {
+        sessionStorage.removeItem('pendingPlan');
+        startCheckout(pendingPlan);
+        return;
+      }
+
       var statusRes = await fetch('/api/checkout/status', { credentials: 'same-origin' });
       if (!statusRes.ok) return;
       var status = await statusRes.json();

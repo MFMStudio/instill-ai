@@ -288,7 +288,8 @@
       errEl.textContent = data.error;
       errEl.classList.remove('hidden');
     } else if (data.redirect) {
-      window.location.href = data.redirect;
+      var pendingPlan = sessionStorage.getItem('pendingPlan');
+      window.location.href = pendingPlan ? '/pricing' : data.redirect;
     } else {
       errEl.textContent = 'Something went wrong. Try again.';
       errEl.classList.remove('hidden');
